@@ -1,0 +1,78 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Enterprise Banking Dashboard Theme */
+    --background: 220 17% 7%;
+    --foreground: 210 40% 98%;
+
+    --card: 221 39% 11%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 221 39% 11%;
+    --popover-foreground: 210 40% 98%;
+
+    /* Deep Blue Primary */
+    --primary: 221 83% 32%;
+    --primary-foreground: 210 40% 98%;
+
+    /* Cyan Accent */
+    --secondary: 188 95% 43%;
+    --secondary-foreground: 221 83% 15%;
+
+    --muted: 221 39% 20%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 188 95% 43%;
+    --accent-foreground: 221 83% 15%;
+
+    /* Danger Red */
+    --destructive: 0 84% 51%;
+    --destructive-foreground: 210 40% 98%;
+
+    /* Warning Amber */
+    --warning: 38 92% 50%;
+    --warning-foreground: 221 83% 15%;
+
+    /* Success Green */
+    --success: 158 64% 52%;
+    --success-foreground: 221 83% 15%;
+
+    --border: 221 39% 20%;
+    --input: 221 39% 20%;
+    --ring: 188 95% 43%;
+
+    --radius: 0.75rem;
+
+    /* Glassmorphic effects */
+    --glass-bg: 221 39% 11% / 0.6;
+    --glass-border: 210 40% 98% / 0.1;
+    
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(221 83% 32%) 0%, hsl(188 95% 43%) 100%);
+    --gradient-danger: linear-gradient(135deg, hsl(0 84% 51%) 0%, hsl(0 84% 35%) 100%);
+    --gradient-success: linear-gradient(135deg, hsl(158 64% 52%) 0%, hsl(158 64% 38%) 100%);
+    --gradient-warning: linear-gradient(135deg, hsl(38 92% 50%) 0%, hsl(38 92% 38%) 100%);
+    
+    /* Shadows */
+    --shadow-glow: 0 0 40px hsl(188 95% 43% / 0.3);
+    --shadow-danger-glow: 0 0 40px hsl(0 84% 51% / 0.3);
+    --shadow-card: 0 10px 30px -10px hsl(221 83% 15% / 0.5);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
