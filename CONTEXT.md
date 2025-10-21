@@ -153,13 +153,10 @@ This is **adaptive security** - low-risk users get a frictionless experience, hi
 - TODO comments for Three.js integration points
 
 ### Frontend (To Be Added by Us)
-- **3D Visualizations:** Three.js via React Three Fiber (R3F)
-  - `@react-three/fiber` - Core React wrapper for Three.js
-  - `@react-three/drei` - Helper components (cameras, controls, loaders, effects)
-  - `@react-three/postprocessing` - Visual effects (bloom, glow)
-- **Animation:** Framer Motion (for 2D UI transitions)
-- **Device Fingerprinting:** FingerprintJS (real device identification)
-- **Performance Tools:** Leva (GUI controls for live-tweaking 3D scenes during demo)
+- **Animation:** Framer Motion (for 2D UI transitions) ✅ IMPLEMENTED
+- **Presentation Mode:** 8 professional slides explaining Zero Trust solution ✅ IMPLEMENTED
+- **Device Fingerprinting:** FingerprintJS (real device identification) - PLANNED
+- **Real-time Sync:** Supabase real-time subscriptions for live dashboard updates - IN PROGRESS
 
 ### Backend (Serverless via Supabase)
 - **Platform:** Supabase (PostgreSQL + Edge Functions + Auth)
@@ -218,8 +215,8 @@ CREATE INDEX idx_login_logs_decision ON login_logs(decision);
 1. **IP Geolocation:** `http://ip-api.com/json/{ip}` (free, no key required)
    - Returns: city, country, latitude, longitude
    
-2. **LLM API:** Claude API (Anthropic) or OpenAI GPT
-   - Endpoint: `https://api.anthropic.com/v1/messages` (for Claude)
+2. **LLM API:** Google Gemini API
+   - Endpoint: `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent`
    - Input: Risk factors as structured prompt
    - Output: Human-readable reason string
    - **Fallback:** Hard-coded reasons if API fails or times out (>2 seconds)
@@ -228,79 +225,18 @@ CREATE INDEX idx_login_logs_decision ON login_logs(decision);
 
 ## The Three.js Enhancements (Post-Lovable)
 
-### 1. Network Breach Visualization (Opening Hook)
-**Location:** Left side of split-screen (Old Security panel)  
-**File:** `src/components/NetworkVisualization3D.tsx`
+**STATUS: SCRAPPED** - Decided to focus on functional demo over visual effects. 3D animations looked "childish and robotic" and distracted from showing the system working. Presentation slides + live login demo proved more effective.
 
-**What It Shows:**
-- 3D network diagram: Nodes (spheres) connected by lines (edges)
-- OLD SECURITY scenario:
-  - One node turns red (compromised)
-  - Red "infection" spreads to all connected nodes like a virus
-  - Text overlay: "1 STOLEN PASSWORD = FULL BREACH"
-- NEW SECURITY scenario:
-  - Red node appears but gateway (glowing shield) blocks it
-  - Infection tries to spread but fails
-  - Text overlay: "ZERO TRUST = ZERO SPREAD"
+**What Was Planned (NOT IMPLEMENTED):**
+- ~~NetworkVisualization3D (network breach animation)~~
+- ~~ImpossibleTravelGlobe3D (3D Earth with travel arc)~~
+- ~~RiskReactor3D (orbital risk orbs)~~
 
-**Technical Approach:**
-- Use R3F `<mesh>` for nodes (SphereGeometry)
-- Use R3F `<line>` for edges
-- Animate color changes with `useSpring` from @react-spring/three
-- Add particle effects for "infection spread" with `Points` geometry
-
-### 2. Impossible Travel Globe (Killer Feature)
-**Location:** Center of dashboard (when Scenario 3 is triggered)  
-**File:** `src/components/ImpossibleTravelGlobe3D.tsx`
-
-**What It Shows:**
-- 3D Earth with realistic textures
-- Glowing markers for cities (Lagos, London)
-- Animated arc between the two cities
-- Distance calculation displayed
-- "BLOCKED" stamp animation
-- AI-generated reason fades in below
-
-**Technical Approach:**
-- Use Drei `<Sphere>` with Earth texture map
-- Use `<OrbitControls>` for rotation
-- Custom shader for glowing city markers
-- Bezier curve for the arc animation (using `TubeGeometry`)
-- Country/city data from geolocation API
-
-### 3. Risk Reactor (Live Demo Centerpiece)
-**Location:** Right side (New Security panel), replaces circular progress bar  
-**File:** `src/components/RiskReactor3D.tsx`
-
-**What It Shows:**
-- 3D cylindrical "reactor core" in center
-- Risk factors fly in as glowing orbs when scenario is triggered
-- Orbs orbit the reactor and stack up
-- Reactor color shifts: Blue (safe) → Yellow (medium) → Red (high)
-- Energy level rises visually (height of glowing column)
-- When HIGH RISK, reactor pulses and triggers block animation
-
-**Technical Approach:**
-- Use `CylinderGeometry` for reactor core
-- Use `SphereGeometry` for risk factor orbs
-- Animate orbs with `useFrame` hook (orbital motion)
-- Color interpolation based on risk score
-- Add bloom/glow with `@react-three/postprocessing`
-
-### Performance Optimization
-```typescript
-// Add to each 3D component
-const DEMO_MODE = import.meta.env.VITE_DEMO_MODE === 'true';
-
-// Reduce particle counts in demo mode
-const particleCount = DEMO_MODE ? 500 : 2000;
-
-// Cap frame rate for stability
-useFrame((state, delta) => {
-  const cappedDelta = Math.min(delta, 1/30); // Max 30fps
-  // ... animation logic
-});
-```
+**Current Approach:**
+- Professional presentation slides (Framer Motion animations)
+- Live two-person login demonstration
+- Real-time dashboard updates via Supabase
+- Focus on proving the system works, not movie effects
 
 ---
 
@@ -316,7 +252,7 @@ useFrame((state, delta) => {
 - Behavior: Typical pattern ✅ (+15 for baseline)
 
 **User Experience:** Seamless login, no prompts  
-**3D Effect:** Risk reactor stays blue/green, gentle pulse
+**Dashboard Shows:** Risk gauge stays green (15/100), all factors verified, GRANTED decision
 
 ---
 
@@ -331,7 +267,7 @@ useFrame((state, delta) => {
 
 **User Experience:** MFA prompt appears  
 **AI Reason:** "Please verify your identity with two-factor authentication because you're logging in from a new device."  
-**3D Effect:** Risk reactor turns yellow, one warning orb appears
+**Dashboard Shows:** Risk gauge yellow (25/100), new device warning, CHALLENGE decision
 
 ---
 
@@ -349,10 +285,7 @@ useFrame((state, delta) => {
 
 **User Experience:** Access blocked immediately  
 **AI Reason:** "Access was blocked because you attempted to log in from London just 5 minutes after logging in from Lagos. This is physically impossible and indicates a compromised account. Please contact IT security."  
-**3D Effect:** 
-- Globe animation shows Lagos → London arc
-- Risk reactor turns red, pulses violently
-- "BLOCKED" stamp appears
+**Dashboard Shows:** Risk gauge red (70/100), impossible travel alert, Lagos→London distance calculation, BLOCKED decision with red alert in audit log
 
 ---
 
@@ -371,10 +304,7 @@ useFrame((state, delta) => {
 
 **User Experience:** Access blocked  
 **AI Reason:** "Access was blocked because your device has critical security issues: disk encryption is disabled, firewall is turned off, and your operating system hasn't been updated in 6 months. Please contact IT to secure your device before accessing sensitive systems."  
-**3D Effect:**
-- Network visualization shows device (red node) trying to connect
-- Gateway shield blocks it with force field effect
-- Risk reactor maxes out (red, multiple danger orbs)
+**Dashboard Shows:** Risk gauge red (85/100), multiple device security failures listed, BLOCKED decision with critical alert
 
 ---
 
@@ -383,49 +313,98 @@ useFrame((state, delta) => {
 ### [0:00-0:30] The Hook
 **Script:** "Wema Bank executives, imagine this: Your CFO's laptop is stolen from their car. The thief has the VPN password saved in the browser. What happens next?"
 
-**Visual:** 3D network breach animation plays on left screen  
+**Visual:** Presentation slide showing the problem visually
 **Impact:** Silent room, everyone understands the problem instantly
 
 ---
 
-### [0:30-2:00] The Solution Overview
+### [0:30-2:00] The Solution Overview (Presentation Slides)
 **Script:** 
-- "Our Smart Access Gateway replaces that broken model with Zero Trust Architecture."
+- "Our TRUST-LOCK replaces that broken model with Zero Trust Architecture."
 - "Instead of one master key, we have an AI-powered security guard at every door."
 - "It asks three questions: WHO are you? WHAT DEVICE are you using? WHERE and WHY are you logging in?"
 
 **Visual:** 
-- Split-screen comparison (Old vs New)
-- Walk through the three pillars with icons/diagrams
+- 8 professional presentation slides:
+  1. Landing - TRUST-LOCK branding
+  2. Problem - Castle-and-moat security failure
+  3. Question - "What if we verified every request?"
+  4. Solution Intro - Zero Trust Architecture
+  5-7. Three Pillars - Identity, Device, Context
+  8. Transition - "Now watch it work in real-time"
 
 ---
 
-### [2:00-3:30] Live Demo (The Magic)
-**Script:** "Let me show you how this works in real-time..."
+### [2:00-4:00] Live Demo (The Magic) ⭐ TWO-PERSON DEMONSTRATION
 
-**Actions:**
-1. Click "Scenario 1: Trusted Employee"
-   - Risk reactor stays calm, shows GRANT decision
-   - "See? Frictionless for legitimate users."
+**Setup:**
+- **YOUR SCREEN (Projected):** Dashboard at `trustlock.vercel.app/`
+- **FRIEND'S SCREEN (Off-camera):** Login page at `trustlock.vercel.app/login`
 
-2. Click "Scenario 2: New Device"
-   - Risk reactor turns yellow, CHALLENGE appears
-   - "A new device? We ask for MFA. Smart, not strict."
+**Script:** "Let me show you TRUST-LOCK working in real-time. My colleague will attempt to log in to our system from a different location. Watch the dashboard analyze each login attempt..."
 
-3. Click "Scenario 3: Impossible Travel" ⭐ **THE SHOWSTOPPER**
-   - 3D globe animation: Lagos → London arc
-   - Risk reactor goes red, BLOCKED
-   - AI-generated reason appears
-   - "The system detected impossible travel and blocked the attempt automatically. Your CFO's account is safe."
+**Scenario 1: Trusted Employee**
+```
+FRIEND: Enters sarah.johnson@wemabank.com / demo123
+        Clicks "Login"
+        SEES: "✅ Access Granted - Welcome Sarah!"
 
-4. Click "Scenario 4: Compromised Device"
-   - Network breach animation shows device being blocked
-   - Show the detailed AI reason
-   - "And unlike a generic error, our AI explains exactly what's wrong so users can fix it."
+YOUR DASHBOARD (Live Update):
+        Risk Score: 15/100 (Green)
+        Decision: ✅ GRANTED
+        Factors: All verified
+        Audit log updates in real-time
+
+YOU SAY: "See? Normal employee, trusted device - seamless access."
+```
+
+**Scenario 2: New Device**
+```
+FRIEND: Enters john.doe@wemabank.com / demo123
+        SEES: "⚠️ Additional Verification Required"
+
+YOUR DASHBOARD:
+        Risk Score: 25/100 (Yellow)
+        Decision: ⚠️ CHALLENGE
+        New device detected
+
+YOU SAY: "New device requires MFA. Smart security, not strict security."
+```
+
+**Scenario 3: Impossible Travel** 🎯 THE SHOWSTOPPER
+```
+FRIEND: Enters admin@wemabank.com / demo123
+        SEES: "🚫 Access Blocked - Impossible travel detected"
+
+YOUR DASHBOARD:
+        Risk Score: 70/100 (Red)
+        Decision: 🚫 BLOCKED
+        Lagos → London in 3 minutes (impossible)
+        Red alert in audit log
+
+YOU SAY: "This user logged in from Lagos 5 minutes ago. Now attempting 
+         from London - physically impossible. The old VPN would have 
+         let this attacker in. TRUST-LOCK blocks it immediately."
+```
+
+**Scenario 4: Compromised Device**
+```
+FRIEND: Enters finance@wemabank.com / demo123
+        SEES: "🚫 Access Blocked - Device security failed"
+
+YOUR DASHBOARD:
+        Risk Score: 85/100 (Red)
+        Decision: 🚫 BLOCKED
+        Encryption OFF, Firewall disabled
+
+YOU SAY: "Even with valid credentials, the device has critical security 
+         issues. TRUST-LOCK protects the network by blocking insecure 
+         endpoints."
+```
 
 ---
 
-### [3:30-4:30] The Differentiators
+### [4:00-4:30] The Differentiators
 **Script:** 
 - "But here's what makes this perfect for Wema Bank..."
 - (Click "Audit Log" tab)
@@ -451,71 +430,48 @@ useFrame((state, delta) => {
 
 ---
 
-## Implementation Priorities (Post-Lovable)
+## Implementation Priorities
 
-### Phase 1: Core Backend (Days 1-2)
+### Phase 1: Core Backend (Days 1-2) ✅ IN PROGRESS
 **Goal:** Get real risk scoring working
 
 **Tasks:**
-1. Set up Supabase project
-   - Create database tables
-   - Set up auth (email/password)
-   - Create 3 demo user accounts
+1. Set up Supabase project ✅ DONE
+   - Create database tables - IN PROGRESS
+   - Set up auth (email/password) - PLANNED
+   - Create 4 demo user accounts - PLANNED
 
-2. Build `check-access` Edge Function
+2. Build `check-access` Edge Function - PLANNED
    - Risk scoring algorithm
    - IP geolocation API integration
    - Query login_logs for impossible travel
    - Return decision + reason
 
-3. Connect frontend to backend
-   - Replace dummy scenario data with real API calls
-   - Update dashboard context to call Supabase
+3. Build Login Page - PLANNED
+   - Simple email/password form at `/login` route
+   - Connects to Supabase Edge Function
+   - Shows result message to user
+
+4. Connect frontend to backend - PLANNED
+   - Add Supabase real-time subscription to dashboard
+   - Update dashboard when new login_logs entry appears
    - Test all 4 scenarios with real backend
 
-**Success Criteria:** Clicking scenarios triggers real backend logic, risk scores are calculated correctly
+**Success Criteria:** Friend can log in, your dashboard updates in real-time, risk scores calculated correctly
 
 ---
 
-### Phase 2: Three.js Integration (Days 3-4)
-**Goal:** Add the three hero visualizations
-
-**Tasks:**
-1. Install dependencies
-   ```bash
-   npm install three @react-three/fiber @react-three/drei @react-three/postprocessing
-   ```
-
-2. Build NetworkVisualization3D component
-   - Replace TODO comment in Old Security panel
-   - Implement node network with spread animation
-   - Test performance
-
-3. Build ImpossibleTravelGlobe3D component
-   - Replace TODO comment in dashboard
-   - Implement Earth with city markers and arc
-   - Integrate with Scenario 3 trigger
-
-4. Build RiskReactor3D component
-   - Replace circular progress bar in New Security panel
-   - Implement reactor with orbital risk orbs
-   - Sync animation with risk score changes
-
-**Success Criteria:** All three 3D elements render smoothly at 30+ fps, animations play correctly
-
----
-
-### Phase 3: AI Enhancement (Day 5)
+### Phase 2: AI Enhancement (Day 3)
 **Goal:** Add LLM-generated explanations
 
 **Tasks:**
-1. Set up Claude API (or OpenAI)
-   - Get API key from Anthropic
+1. Set up Gemini API
+   - Get API key from Google AI Studio
    - Add to environment variables
 
 2. Build `generateReason` function in Edge Function
    - Format risk factors as prompt
-   - Call Claude API with 2-second timeout
+   - Call Gemini API with 2-second timeout
    - Fallback to hard-coded reasons on failure
 
 3. Test with all 4 scenarios
@@ -526,7 +482,7 @@ useFrame((state, delta) => {
 
 ---
 
-### Phase 4: Polish & Testing (Day 6)
+### Phase 3: Polish & Testing (Day 4)
 **Goal:** Make it presentation-ready
 
 **Tasks:**

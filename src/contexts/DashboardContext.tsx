@@ -29,12 +29,13 @@ export interface Scenario {
 interface DashboardContextType {
   currentScenario: number;
   riskScore: number;
-  decision: 'GRANTED' | 'CHALLENGE' | 'BLOCKED';
+  decision: 'GRANTED' | 'CHALLENGE' | 'BLOCKED' | null;
   reason: string;
   riskFactors: RiskFactor[];
   auditLog: AuditLogEntry[];
   setScenario: (scenarioIndex: number) => void;
   resetScenario: () => void;
+  updateFromLoginLog: (logEntry: any) => void;
 }
 
 const scenarios: Scenario[] = [
@@ -146,11 +147,23 @@ const DashboardContext = createContext<DashboardContextType | undefined>(undefin
 export const DashboardProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [currentScenario, setCurrentScenario] = useState(0);
   const [auditLog, setAuditLog] = useState<AuditLogEntry[]>(initialAuditLog);
+  
+  // Real-time state (starts empty, waiting for login)
+  const [liveRiskScore, setLiveRiskScore] = useState<number>(0);
+  const [liveDecision, setLiveDecision] = useState<'GRANTED' | 'CHALLENGE' | 'BLOCKED' | null>(null);
+  const [liveReason, setLiveReason] = useState<string>('');
+  const [liveFactors, setLiveFactors] = useState<RiskFactor[]>([]);
 
   const scenario = scenarios[currentScenario];
 
   const setScenario = (scenarioIndex: number) => {
     setCurrentScenario(scenarioIndex);
+    
+    // Update live state
+    setLiveRiskScore(scenarios[scenarioIndex].riskScore);
+    setLiveDecision(scenarios[scenarioIndex].decision);
+    setLiveReason(scenarios[scenarioIndex].reason);
+    setLiveFactors(scenarios[scenarioIndex].factors);
     
     // Add to audit log
     const newEntry: AuditLogEntry = {
@@ -169,19 +182,49 @@ export const DashboardProvider: React.FC<{ children: ReactNode }> = ({ children 
 
   const resetScenario = () => {
     setCurrentScenario(0);
+    setLiveRiskScore(0);
+    setLiveDecision(null);
+    setLiveReason('');
+    setLiveFactors([]);
+  };
+
+  // Function to update dashboard from real login_logs entry
+  const updateFromLoginLog = (logEntry: any) => {
+    setLiveRiskScore(logEntry.risk_score);
+    setLiveDecision(logEntry.decision);
+    setLiveReason(logEntry.ai_reason || logEntry.reason || '');
+    
+    // Convert risk_factors JSONB to RiskFactor array
+    const factors: RiskFactor[] = logEntry.risk_factors || [];
+    setLiveFactors(factors);
+    
+    // Add to audit log
+    const newEntry: AuditLogEntry = {
+      id: logEntry.id,
+      timestamp: new Date(logEntry.created_at).toLocaleString(),
+      user: logEntry.email,
+      device: logEntry.device_fingerprint || 'Unknown',
+      location: `${logEntry.city || 'Unknown'}, ${logEntry.country || 'Unknown'}`,
+      riskScore: logEntry.risk_score,
+      decision: logEntry.decision,
+      reason: logEntry.ai_reason || 'Risk analysis completed',
+    };
+    
+    setAuditLog(prev => [newEntry, ...prev]);
   };
 
   return (
     <DashboardContext.Provider
       value={{
         currentScenario,
-        riskScore: scenario.riskScore,
-        decision: scenario.decision,
-        reason: scenario.reason,
-        riskFactors: scenario.factors,
+        riskScore: liveRiskScore,
+        decision: liveDecision,
+        reason: liveReason,
+        riskFactors: liveFactors,
         auditLog,
         setScenario,
         resetScenario,
+        updateFromLoginLog,
       }}
     >
       {children}
