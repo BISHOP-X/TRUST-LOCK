@@ -29,27 +29,27 @@ export const ProgressIndicator = () => {
 
   return (
     <motion.div
-      className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 20 }}
+      className="fixed top-1/2 -translate-y-1/2 right-6 z-50"
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: 20 }}
       transition={{ duration: 0.4 }}
     >
-      <div className="bg-background/80 backdrop-blur-md border border-border rounded-full px-6 py-3 shadow-lg">
-        <div className="flex items-center gap-4">
+      <div className="bg-background/80 backdrop-blur-md border border-border rounded-full px-4 py-6 shadow-lg">
+        <div className="flex flex-col items-center gap-3">
           {/* Step counter */}
-          <span className="text-sm text-muted-foreground font-medium">
-            {currentIndex + 1} / {totalSteps}
+          <span className="text-xs text-muted-foreground font-medium rotate-0">
+            {currentIndex + 1}/{totalSteps}
           </span>
 
-          {/* Progress dots */}
-          <div className="flex gap-2">
+          {/* Progress dots - vertical */}
+          <div className="flex flex-col gap-2">
             {STEP_ORDER.map((step, index) => (
               <div
                 key={step}
                 className={`w-2 h-2 rounded-full transition-all duration-300 ${
                   index === currentIndex
-                    ? 'bg-primary w-6'
+                    ? 'bg-primary h-6'
                     : index < currentIndex
                     ? 'bg-primary/40'
                     : 'bg-muted'
@@ -57,11 +57,6 @@ export const ProgressIndicator = () => {
               />
             ))}
           </div>
-
-          {/* Keyboard hint */}
-          <span className="text-xs text-muted-foreground/60">
-            Press <kbd className="px-2 py-1 bg-muted rounded text-muted-foreground font-mono">→</kbd> to continue
-          </span>
         </div>
       </div>
     </motion.div>
