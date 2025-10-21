@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { supabase } from '@/lib/supabase';
 
 export interface AuditLogEntry {
   id: string;
@@ -212,6 +213,34 @@ export const DashboardProvider: React.FC<{ children: ReactNode }> = ({ children 
     
     setAuditLog(prev => [newEntry, ...prev]);
   };
+
+  // Real-time subscription to login_logs table
+  useEffect(() => {
+    // Subscribe to INSERT events on login_logs table
+    const channel = supabase
+      .channel('login_logs_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'login_logs'
+        },
+        (payload) => {
+          console.log('New login detected:', payload.new);
+          updateFromLoginLog(payload.new);
+        }
+      )
+      .subscribe();
+
+    console.log('Real-time subscription active for login_logs');
+
+    // Cleanup on unmount
+    return () => {
+      supabase.removeChannel(channel);
+      console.log('Real-time subscription cleaned up');
+    };
+  }, []);
 
   return (
     <DashboardContext.Provider

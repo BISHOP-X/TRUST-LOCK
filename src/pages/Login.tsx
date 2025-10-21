@@ -22,19 +22,48 @@ export default function Login() {
     setMessage('');
 
     try {
-      // TODO: Replace with actual Supabase Edge Function call
-      // For now, simulate the response
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Get device fingerprint (simple random string for demo)
+      const deviceFingerprint = `device_${Math.random().toString(36).substring(7)}`;
+      const userAgent = navigator.userAgent;
+      
+      // Get user's IP address
+      let userIp = '0.0.0.0';
+      try {
+        const ipResponse = await fetch('https://api.ipify.org?format=json');
+        const ipData = await ipResponse.json();
+        userIp = ipData.ip;
+      } catch (error) {
+        console.error('Failed to get IP:', error);
+        // Use fallback IP if service fails
+        userIp = '197.210.76.45'; // Lagos, Nigeria (demo fallback)
+      }
 
-      // Temporary mock response (will be replaced with real Edge Function)
-      const mockDecision: DecisionType = 'GRANTED';
-      const mockMessage = 'Access granted. Welcome back!';
+      // Call Supabase Edge Function
+      const edgeFunctionUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/check-access`;
+      
+      const response = await fetch(edgeFunctionUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`
+        },
+        body: JSON.stringify({
+          email,
+          password,
+          ip: userIp,
+          userAgent,
+          deviceFingerprint
+        })
+      });
 
-      setDecision(mockDecision);
-      setMessage(mockMessage);
+      const data = await response.json();
+      
+      setDecision(data.decision);
+      setMessage(data.reason || 'Security analysis completed.');
     } catch (error) {
+      console.error('Login error:', error);
       setDecision('BLOCKED');
-      setMessage('An error occurred. Please try again.');
+      setMessage('An error occurred during security analysis. Please try again.');
     } finally {
       setLoading(false);
     }
