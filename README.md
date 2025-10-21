@@ -1,73 +1,142 @@
-# Welcome to your Lovable project
+# TRUST-LOCK
 
-## Project info
+**Zero Trust Security Gateway for Enterprise Banking**
 
-**URL**: https://lovable.dev/projects/f091ec59-c125-4a90-9411-b262963c7d49
+A modern security solution that replaces traditional VPN-based access with intelligent, real-time risk analysis. Built for the Wema Bank Hackathon 2025 - "The Borderless Office" track.
 
-## How can I edit this code?
+---
 
-There are several ways of editing your application.
+## 🎯 What is TRUST-LOCK?
 
-**Use Lovable**
+TRUST-LOCK is a Zero Trust Access Gateway that evaluates every login attempt using three security pillars:
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/f091ec59-c125-4a90-9411-b262963c7d49) and start prompting.
+1. **Identity Verification** - Who is trying to access?
+2. **Device Analysis** - What device are they using?
+3. **Context Evaluation** - Where, when, and why are they logging in?
 
-Changes made via Lovable will be committed automatically to this repo.
+Instead of binary access (allowed/denied), TRUST-LOCK makes adaptive decisions:
+- ✅ **GRANT** - Low risk, seamless access
+- ⚠️ **CHALLENGE** - Medium risk, require MFA
+- 🚫 **BLOCK** - High risk, deny and alert security team
 
-**Use your preferred IDE**
+---
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## 🚀 Quick Start
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Prerequisites
+- Node.js 18+ and npm
+- Supabase account (for backend)
 
-Follow these steps:
+### Installation
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+```bash
+# Clone the repository
+git clone https://github.com/BISHOP-X/TRUST-LOCK.git
+cd TRUST-LOCK
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+# Install dependencies
+npm install --legacy-peer-deps
 
-# Step 3: Install the necessary dependencies.
-npm i
+# Set up environment variables
+# Create a .env file with your Supabase credentials:
+# VITE_SUPABASE_URL=your_supabase_url
+# VITE_SUPABASE_ANON_KEY=your_anon_key
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Start development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+The app will be available at `http://localhost:8080`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+---
 
-**Use GitHub Codespaces**
+## 🏗️ Technology Stack
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+**Frontend:**
+- React 18 + TypeScript
+- Vite (build tool)
+- Tailwind CSS + shadcn/ui components
+- Framer Motion (animations)
+- Three.js (3D visualizations)
 
-## What technologies are used for this project?
+**Backend:**
+- Supabase (PostgreSQL + Auth + Real-time)
+- IP Geolocation API
+- Claude API (AI-generated security explanations)
 
-This project is built with:
+---
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## 📋 Project Structure
 
-## How can I deploy this project?
+```
+TRUST-LOCK/
+├── src/
+│   ├── components/
+│   │   ├── dashboard/        # Dashboard components
+│   │   ├── presentation/     # Presentation mode slides
+│   │   └── ui/              # shadcn/ui components
+│   ├── contexts/            # React Context providers
+│   ├── lib/                 # Utilities (Supabase client)
+│   └── pages/               # Main application pages
+├── public/                  # Static assets
+└── supabase/               # Database schema & functions
+```
 
-Simply open [Lovable](https://lovable.dev/projects/f091ec59-c125-4a90-9411-b262963c7d49) and click on Share -> Publish.
+---
 
-## Can I connect a custom domain to my Lovable project?
+## 🎮 Demo Scenarios
 
-Yes, you can!
+The application includes 4 interactive demo scenarios:
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+1. **Trusted Employee** - Normal login (✅ GRANTED)
+2. **New Device** - Unrecognized device (⚠️ CHALLENGE)
+3. **Impossible Travel** - Lagos to London in 3 minutes (🚫 BLOCKED)
+4. **Compromised Device** - Failed security checks (🚫 BLOCKED)
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+---
+
+## 🛠️ Available Scripts
+
+```bash
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run preview      # Preview production build
+npm run lint         # Run ESLint
+```
+
+---
+
+## 📦 Deployment
+
+1. Build the production bundle:
+   ```bash
+   npm run build
+   ```
+
+2. Deploy the `dist/` folder to your hosting provider:
+   - Vercel
+   - Netlify
+   - AWS S3 + CloudFront
+   - Any static hosting service
+
+---
+
+## 🤝 Contributing
+
+This project was built for the Wema Bank Hackathon 2025. For questions or collaboration:
+
+- **Repository:** https://github.com/BISHOP-X/TRUST-LOCK
+- **Issues:** https://github.com/BISHOP-X/TRUST-LOCK/issues
+
+---
+
+## 📄 License
+
+MIT License - See LICENSE file for details
+
+---
+
+## 🎓 Acknowledgments
+
+Built for Wema Bank Hackathon 2025 - "Future-Proof Information Security: The Borderless Office" track.
+
