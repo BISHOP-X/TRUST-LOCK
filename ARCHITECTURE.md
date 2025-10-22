@@ -300,8 +300,8 @@ if (impossibleTravel) {
 **Example Calculations:**
 - **Alice (Trusted):** 10 + 5 + 5 + 10 = 30 → GRANTED
 - **Bob (New Device):** 10 + 25 + 5 + 10 = 50 → CHALLENGE
-- **Carol (Impossible Travel):** 10 + 5 + 25 + 60 = 100 → BLOCKED
-- **David (Compromised):** Hardcoded 85 → BLOCKED
+- **Carol (Impossible Travel):** 10 + 5 + 25 + 60 = 100 → BLOCKED _(hardcoded for demo)_
+- **David (Compromised):** 85 → BLOCKED _(hardcoded for demo)_
 
 ---
 
@@ -595,13 +595,15 @@ We created 4 accounts that demonstrate different risk levels:
 
 3. **carol@company.com**
    - Trusted device: ✅
-   - Location: ⚠️ (London → Ibadan in 45 min)
+   - Location: ⚠️ (London → Lagos in 45 min)
    - Impossible travel: 🚨
    - **Score:** 100 → BLOCKED
+   - _Note: Hardcoded for demo reliability (impossible travel detection works but requires previous login data)_
 
 4. **david@company.com**
-   - Hardcoded compromise scenario
+   - Device security: 🚨 (malware, outdated patches)
    - **Score:** 85 → BLOCKED
+   - _Note: Hardcoded for demo reliability (real device scanning requires endpoint security agent integration)_
 
 ### Testing Real-time Updates
 
