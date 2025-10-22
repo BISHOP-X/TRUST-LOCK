@@ -1,7 +1,7 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.0';
 
-// Hardcoded AI responses library
+// AI-generated security explanations for each risk category (SIMULATED FOR DEM, WILL USE REAL AI API IN PRODUCTION)
 const AI_REASONS = {
   trustedDevice: [
     "All verification pillars passed. Device fingerprint matches trusted registry, IP geolocation confirms expected Lagos office location, and behavioral patterns align with normal working hours.",
@@ -135,7 +135,7 @@ serve(async (req) => {
     }
 
     // 4. Calculate risk score using 3-pillar logic
-    let riskScore = 50; // Base score
+    let riskScore = 0; // Start at 0, add/subtract points based on pillars
     const riskFactors: Array<{ name: string; status: string; points: number; label: string }> = [];
     let aiReasonCategory: keyof typeof AI_REASONS = 'trustedDevice';
     let isImpossibleTravel = false;
@@ -143,29 +143,30 @@ serve(async (req) => {
     let timeSinceLastLoginMinutes = 0;
 
     // Pillar 1: Identity (already validated via password)
+    riskScore += 10; // Base points for valid credentials
     riskFactors.push({
       name: 'Identity Verified',
       status: 'success',
-      points: 0,
+      points: 10,
       label: '✅ Credentials Valid',
     });
 
     // Pillar 2: Device
     const deviceMatch = deviceFingerprint === user.trusted_device_fingerprint;
     if (deviceMatch) {
-      riskScore -= 35;
+      riskScore += 5; // Trusted device adds minimal risk
       riskFactors.push({
         name: 'Device Status',
         status: 'success',
-        points: -35,
+        points: 5,
         label: '✅ Trusted Device',
       });
     } else {
-      riskScore += 15;
+      riskScore += 25; // New device adds moderate risk
       riskFactors.push({
         name: 'Device Status',
         status: 'warning',
-        points: 15,
+        points: 25,
         label: '⚠️ New Device Detected',
       });
       aiReasonCategory = 'newDevice';
@@ -177,27 +178,27 @@ serve(async (req) => {
     const countryMatch = country === user.trusted_country;
 
     if (ipMatch && cityMatch) {
-      riskScore -= 20;
+      riskScore += 5; // Known location, minimal risk
       riskFactors.push({
         name: 'Location',
         status: 'success',
-        points: -20,
+        points: 5,
         label: `✅ ${city}, ${country}`,
       });
     } else if (countryMatch) {
-      riskScore += 10;
+      riskScore += 15; // Same country but different city
       riskFactors.push({
         name: 'Location',
         status: 'warning',
-        points: 10,
+        points: 15,
         label: `⚠️ ${city}, ${country}`,
       });
     } else {
-      riskScore += 20;
+      riskScore += 25; // Different country
       riskFactors.push({
         name: 'Location',
         status: 'warning',
-        points: 20,
+        points: 25,
         label: `⚠️ ${city}, ${country}`,
       });
       aiReasonCategory = 'differentCountry';
@@ -232,35 +233,35 @@ serve(async (req) => {
       if (travelDistanceKm > maxPossibleDistance && travelDistanceKm > 100) {
         // Impossible travel detected!
         isImpossibleTravel = true;
-        riskScore += 50;
+        riskScore += 60; // High risk for impossible travel
         riskFactors.push({
           name: 'Behavior',
           status: 'danger',
-          points: 50,
+          points: 60,
           label: '🚨 Impossible Travel',
         });
         aiReasonCategory = 'impossibleTravel';
       } else {
+        riskScore += 5; // Normal behavior
         riskFactors.push({
           name: 'Behavior',
           status: 'success',
-          points: 0,
+          points: 5,
           label: '✅ Normal Pattern',
         });
       }
     } else {
       // First login or no previous location data
+      riskScore += 10; // Slight risk for first login
       riskFactors.push({
         name: 'Behavior',
         status: 'success',
-        points: 5,
+        points: 10,
         label: '✅ First Login',
       });
-      riskScore += 5;
     }
 
-    // Special case: Compromised device scenario (for demo purposes)
-    // If email is david@company.com, simulate compromised device
+    // David scenario: Hardcoded high-risk score for compromised device demo
     if (email === 'david@company.com') {
       riskScore = 85;
       riskFactors.length = 0; // Clear existing factors

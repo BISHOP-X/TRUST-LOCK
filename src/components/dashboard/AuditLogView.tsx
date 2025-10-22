@@ -19,9 +19,9 @@ export const AuditLogView = () => {
   };
 
   const getRiskColor = (score: number) => {
-    if (score <= 20) return 'text-success';
-    if (score <= 49) return 'text-warning';
-    return 'text-destructive';
+    if (score <= 30) return 'text-success';      // Green: 0-30 (GRANTED)
+    if (score <= 60) return 'text-warning';      // Yellow: 31-60 (CHALLENGE)
+    return 'text-destructive';                   // Red: 61+ (BLOCKED)
   };
 
   return (
@@ -73,7 +73,7 @@ export const AuditLogView = () => {
           </div>
 
           <p className="text-sm text-muted-foreground mt-4">
-            Showing {auditLog.length} access attempts. Click "Export CSV" to download full log.
+            Showing {auditLog.length} access attempt{auditLog.length !== 1 ? 's' : ''}.
           </p>
         </div>
       </Card>

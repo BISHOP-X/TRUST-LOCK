@@ -1,7 +1,7 @@
-import { Shield, Download, Play } from 'lucide-react';
+import { Shield, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { usePresentation } from '@/contexts/PresentationContext';
+import { useDashboard } from '@/contexts/DashboardContext';
 
 interface NavigationBarProps {
   activeTab: string;
@@ -10,21 +10,45 @@ interface NavigationBarProps {
 
 export const NavigationBar = ({ activeTab, onTabChange }: NavigationBarProps) => {
   const { toast } = useToast();
-  const { isPresentationMode, startPresentation } = usePresentation();
-
-  const handleStartPresentation = () => {
-    startPresentation();
-    toast({
-      title: '🎬 Presentation Mode Started',
-      description: 'Use arrow keys or Enter to navigate. Press Escape to exit.',
-    });
-  };
+  const { auditLog } = useDashboard();
 
   const handleExport = () => {
-    toast({
-      title: '✅ CSV Exported Successfully',
-      description: 'Audit log has been downloaded to your device.',
-    });
+    try {
+      // Convert audit log to CSV
+      const headers = ['Timestamp', 'User', 'Device', 'Location', 'Risk Score', 'Decision', 'Reason'];
+      const csvRows = [
+        headers.join(','),
+        ...auditLog.map(entry => [
+          `"${entry.timestamp}"`,
+          `"${entry.user}"`,
+          `"${entry.device}"`,
+          `"${entry.location}"`,
+          entry.riskScore,
+          entry.decision,
+          `"${entry.reason.replace(/"/g, '""')}"` // Escape quotes
+        ].join(','))
+      ];
+      
+      const csvContent = csvRows.join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `audit-log-${new Date().toISOString().split('T')[0]}.csv`;
+      link.click();
+      URL.revokeObjectURL(url);
+
+      toast({
+        title: '✅ CSV Exported Successfully',
+        description: `Downloaded ${auditLog.length} audit log entries.`,
+      });
+    } catch (error) {
+      toast({
+        title: '❌ Export Failed',
+        description: 'Could not export audit log. Please try again.',
+        variant: 'destructive',
+      });
+    }
   };
 
   return (
@@ -42,18 +66,6 @@ export const NavigationBar = ({ activeTab, onTabChange }: NavigationBarProps) =>
           </div>
 
           <div className="flex items-center gap-6">
-            {/* Start Presentation Button - Only show when NOT in presentation mode */}
-            {!isPresentationMode && (
-              <Button
-                onClick={handleStartPresentation}
-                size="sm"
-                className="bg-gradient-primary hover:opacity-90 shadow-glow"
-              >
-                <Play className="mr-2 h-4 w-4" />
-                Start Presentation
-              </Button>
-            )}
-
             <button
               onClick={() => onTabChange('demo')}
               className={`text-sm font-medium transition-colors px-4 py-2 rounded-lg ${

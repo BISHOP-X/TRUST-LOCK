@@ -1,29 +1,66 @@
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Shield, Loader2, CheckCircle, AlertTriangle, XCircle } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 type DecisionType = 'GRANTED' | 'CHALLENGE' | 'BLOCKED' | null;
 
+const DEMO_ACCOUNTS = [
+  { 
+    email: 'alice@company.com', 
+    name: 'Alice - Trusted Employee', 
+    scenario: 'Scenario 1',
+    deviceFingerprint: 'device_alice_trusted_2024',
+  },
+  { 
+    email: 'bob@company.com', 
+    name: 'Bob - New Device', 
+    scenario: 'Scenario 2',
+    deviceFingerprint: 'device_bob_new_unknown',
+  },
+  { 
+    email: 'carol@company.com', 
+    name: 'Carol - Impossible Travel', 
+    scenario: 'Scenario 3',
+    deviceFingerprint: 'device_carol_trusted_2024',
+  },
+  { 
+    email: 'david@company.com', 
+    name: 'David - Compromised Device', 
+    scenario: 'Scenario 4',
+    deviceFingerprint: 'device_david_compromised',
+  },
+];
+
 export default function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [selectedEmail, setSelectedEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [decision, setDecision] = useState<DecisionType>(null);
   const [message, setMessage] = useState('');
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!selectedEmail) {
+      setDecision('BLOCKED');
+      setMessage('Please select a demo account.');
+      return;
+    }
+    
     setLoading(true);
     setDecision(null);
     setMessage('');
 
     try {
-      // Get device fingerprint (simple random string for demo)
-      const deviceFingerprint = `device_${Math.random().toString(36).substring(7)}`;
+      const email = selectedEmail;
+      const password = 'demo'; // All demo accounts use this password
+      
+      // Get device fingerprint for selected account (consistent for demo)
+      const selectedAccount = DEMO_ACCOUNTS.find(acc => acc.email === selectedEmail);
+      const deviceFingerprint = selectedAccount?.deviceFingerprint || `device_unknown_${Date.now()}`;
       const userAgent = navigator.userAgent;
       
       // Get user's IP address
@@ -58,10 +95,19 @@ export default function Login() {
 
       const data = await response.json();
       
+      console.log('🔐 Login response received:', {
+        email,
+        decision: data.decision,
+        riskScore: data.riskScore,
+        timestamp: new Date().toISOString()
+      });
+      
       setDecision(data.decision);
       setMessage(data.reason || 'Security analysis completed.');
+      
+      console.log('✅ Login attempt recorded - Dashboard should update in real-time');
     } catch (error) {
-      console.error('Login error:', error);
+      console.error('❌ Login error:', error);
       setDecision('BLOCKED');
       setMessage('An error occurred during security analysis. Please try again.');
     } finally {
@@ -121,37 +167,31 @@ export default function Login() {
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-white">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="name@company.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  disabled={loading}
-                  className="bg-slate-900 border-slate-600 text-white placeholder:text-slate-500"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="password" className="text-white">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  disabled={loading}
-                  className="bg-slate-900 border-slate-600 text-white placeholder:text-slate-500"
-                />
+                <Label htmlFor="account" className="text-white">Select Demo Account</Label>
+                <Select value={selectedEmail} onValueChange={setSelectedEmail}>
+                  <SelectTrigger className="bg-slate-900 border-slate-600 text-white">
+                    <SelectValue placeholder="Choose a scenario..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {DEMO_ACCOUNTS.map((account) => (
+                      <SelectItem key={account.email} value={account.email}>
+                        <div className="flex flex-col">
+                          <span className="font-medium">{account.scenario}</span>
+                          <span className="text-xs text-muted-foreground">{account.name}</span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-slate-400">
+                  Password is automatically set to: <code className="bg-slate-800 px-1 rounded">demo</code>
+                </p>
               </div>
 
               <Button
                 type="submit"
                 className="w-full"
-                disabled={loading}
+                disabled={loading || !selectedEmail}
               >
                 {loading ? (
                   <>
@@ -172,32 +212,25 @@ export default function Login() {
             <div className="flex items-start gap-4">
               {getDecisionIcon()}
               <div className="flex-1">
-                <h3 className="font-bold text-lg mb-1">
+                <h3 className={`font-bold text-lg mb-1 ${
+                  decision === 'GRANTED' ? 'text-green-800 dark:text-green-200' :
+                  decision === 'CHALLENGE' ? 'text-yellow-800 dark:text-yellow-200' :
+                  'text-red-800 dark:text-red-200'
+                }`}>
                   {decision === 'GRANTED' && 'Access Granted'}
                   {decision === 'CHALLENGE' && 'Additional Verification Required'}
                   {decision === 'BLOCKED' && 'Access Blocked'}
                 </h3>
-                <AlertDescription className="text-sm">
+                <AlertDescription className={`text-sm ${
+                  decision === 'GRANTED' ? 'text-green-700 dark:text-green-300' :
+                  decision === 'CHALLENGE' ? 'text-yellow-700 dark:text-yellow-300' :
+                  'text-red-700 dark:text-red-300'
+                }`}>
                   {message}
                 </AlertDescription>
               </div>
             </div>
           </Alert>
-        )}
-
-        {/* Demo Users Hint (for testing) */}
-        {import.meta.env.VITE_DEMO_MODE === 'true' && (
-          <Card className="border-slate-700 bg-slate-800/30 backdrop-blur">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm text-slate-300">Demo Accounts</CardTitle>
-            </CardHeader>
-            <CardContent className="text-xs text-slate-400 space-y-1">
-              <p>• alice@company.com - Trusted employee</p>
-              <p>• bob@company.com - New device</p>
-              <p>• carol@company.com - Impossible travel</p>
-              <p>• david@company.com - Compromised device</p>
-            </CardContent>
-          </Card>
         )}
       </div>
     </div>

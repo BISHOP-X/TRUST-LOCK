@@ -24,54 +24,63 @@ export const SystemInfoView = () => {
 
           <div className="space-y-6">
             <section className="bg-muted/30 rounded-lg p-6 border border-border">
-              <h2 className="text-2xl font-bold text-foreground mb-4">About This Demo</h2>
+              <h2 className="text-2xl font-bold text-foreground mb-4">About This System</h2>
               <p className="text-foreground/90 mb-3">
-                This is a Zero Trust Access Gateway proof-of-concept developed for the Wema Bank Hackathon 2025. 
-                The system demonstrates intelligent, risk-based access control that continuously evaluates security 
-                posture before granting access to sensitive resources.
+                TRUST-LOCK is a Zero Trust security gateway that analyzes every login attempt in real-time. 
+                Instead of just checking passwords, it looks at device fingerprints, IP geolocation, and behavioral 
+                patterns to calculate a risk score and decide whether to grant, challenge, or block access.
               </p>
               <p className="text-foreground/90">
-                Unlike traditional VPN solutions that grant "all or nothing" access, this gateway makes dynamic 
-                decisions based on multiple security factors, ensuring that only verified users on trusted devices 
-                can access banking systems.
+                Built with React + TypeScript frontend, Supabase Edge Functions for the risk analysis backend, 
+                and PostgreSQL with real-time subscriptions so the dashboard updates live when someone logs in.
               </p>
             </section>
 
             <section className="bg-muted/30 rounded-lg p-6 border border-border">
               <h2 className="text-2xl font-bold text-foreground mb-4">Risk Scoring Model</h2>
-              <div className="grid md:grid-cols-3 gap-4 mb-4">
+              <div className="grid md:grid-cols-2 gap-4 mb-4">
                 <div className="bg-card/40 rounded-lg p-4 border border-border">
                   <div className="flex items-center gap-2 mb-2">
                     <Lock className="h-5 w-5 text-primary" />
-                    <h3 className="font-semibold text-foreground">Identity (0-20)</h3>
+                    <h3 className="font-semibold text-foreground">Identity (+10)</h3>
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    Multi-factor authentication, password strength, credential freshness
+                    Valid credentials verified - base points for authentication
                   </p>
                 </div>
                 
                 <div className="bg-card/40 rounded-lg p-4 border border-border">
                   <div className="flex items-center gap-2 mb-2">
                     <Database className="h-5 w-5 text-warning" />
-                    <h3 className="font-semibold text-foreground">Device (0-50)</h3>
+                    <h3 className="font-semibold text-foreground">Device (+5 to +25)</h3>
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    Device posture, encryption status, security patches, firewall state
+                    Trusted device +5 points, New/unknown device +25 points
                   </p>
                 </div>
                 
                 <div className="bg-card/40 rounded-lg p-4 border border-border">
                   <div className="flex items-center gap-2 mb-2">
                     <Zap className="h-5 w-5 text-secondary" />
-                    <h3 className="font-semibold text-foreground">Context (0-50)</h3>
+                    <h3 className="font-semibold text-foreground">Location (+5 to +25)</h3>
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    Location, time of access, behavioral patterns, network security
+                    Known location +5, Same country +15, Different country +25
+                  </p>
+                </div>
+
+                <div className="bg-card/40 rounded-lg p-4 border border-border">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Shield className="h-5 w-5 text-success" />
+                    <h3 className="font-semibold text-foreground">Behavior (+5 to +60)</h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Normal +5, First login +10, Impossible travel +60 points
                   </p>
                 </div>
               </div>
               <p className="text-sm text-foreground/90">
-                <strong>Total Risk Score Range:</strong> 0-100 points
+                <strong>Additive Risk Model:</strong> Start at 0, add points for each pillar (Max: 100)
               </p>
             </section>
 
@@ -80,53 +89,40 @@ export const SystemInfoView = () => {
               <div className="space-y-3">
                 <div className="flex items-center gap-4">
                   <div className="w-24 h-12 bg-gradient-success rounded-lg flex items-center justify-center text-success-foreground font-bold">
-                    0-20
+                    0-30
                   </div>
                   <div>
-                    <h3 className="font-semibold text-success">Grant Access</h3>
+                    <h3 className="font-semibold text-success">✅ Grant Access</h3>
                     <p className="text-sm text-muted-foreground">
-                      Low risk - All security checks passed, user trusted
+                      Low risk - All security checks passed, trusted employee on known device
                     </p>
                   </div>
                 </div>
                 
                 <div className="flex items-center gap-4">
                   <div className="w-24 h-12 bg-gradient-warning rounded-lg flex items-center justify-center text-warning-foreground font-bold">
-                    21-49
+                    31-60
                   </div>
                   <div>
-                    <h3 className="font-semibold text-warning">Challenge Required</h3>
+                    <h3 className="font-semibold text-warning">⚠️ Challenge Required</h3>
                     <p className="text-sm text-muted-foreground">
-                      Medium risk - Additional verification needed (MFA, security questions)
+                      Medium risk - New device or location detected, additional MFA required
                     </p>
                   </div>
                 </div>
                 
                 <div className="flex items-center gap-4">
                   <div className="w-24 h-12 bg-gradient-danger rounded-lg flex items-center justify-center text-destructive-foreground font-bold">
-                    50+
+                    61+
                   </div>
                   <div>
-                    <h3 className="font-semibold text-destructive">Block Access</h3>
+                    <h3 className="font-semibold text-destructive">🚨 Block Access</h3>
                     <p className="text-sm text-muted-foreground">
-                      High risk - Critical security issues detected, access denied
+                      High risk - Impossible travel or compromised device detected, access denied
                     </p>
                   </div>
                 </div>
               </div>
-            </section>
-
-            <section className="bg-primary/10 border-2 border-primary/50 rounded-lg p-6">
-              <h2 className="text-xl font-bold text-foreground mb-3">Demo Scenarios</h2>
-              <p className="text-sm text-foreground/90 mb-3">
-                Use the floating Demo Controller to test different security scenarios:
-              </p>
-              <ul className="space-y-2 text-sm text-foreground/90">
-                <li><strong>Scenario 1:</strong> Trusted employee on known device → Access Granted</li>
-                <li><strong>Scenario 2:</strong> New device detected → Challenge Required</li>
-                <li><strong>Scenario 3:</strong> Impossible travel detected → Access Blocked</li>
-                <li><strong>Scenario 4:</strong> Compromised device security → Access Blocked</li>
-              </ul>
             </section>
 
             <div className="text-center pt-4">

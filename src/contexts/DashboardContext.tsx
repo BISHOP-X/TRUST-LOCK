@@ -216,6 +216,16 @@ export const DashboardProvider: React.FC<{ children: ReactNode }> = ({ children 
 
   // Real-time subscription to login_logs table
   useEffect(() => {
+    // Only react to these 4 demo accounts
+    const DEMO_EMAILS = [
+      'alice@company.com',
+      'bob@company.com',
+      'carol@company.com',
+      'david@company.com'
+    ];
+
+    console.log('🔌 Setting up real-time subscription...');
+
     // Subscribe to INSERT events on login_logs table
     const channel = supabase
       .channel('login_logs_changes')
@@ -227,18 +237,31 @@ export const DashboardProvider: React.FC<{ children: ReactNode }> = ({ children 
           table: 'login_logs'
         },
         (payload) => {
-          console.log('New login detected:', payload.new);
-          updateFromLoginLog(payload.new);
+          console.log('📨 Real-time event received:', payload);
+          const email = payload.new.email;
+          
+          // Only update dashboard if email is one of our 4 demo accounts
+          if (DEMO_EMAILS.includes(email)) {
+            console.log('✅ Demo login detected, updating dashboard:', email);
+            updateFromLoginLog(payload.new);
+          } else {
+            console.log('⏭️ Ignoring non-demo login:', email);
+          }
         }
       )
-      .subscribe();
-
-    console.log('Real-time subscription active for login_logs');
+      .subscribe((status) => {
+        console.log('📡 Subscription status:', status);
+        if (status === 'SUBSCRIBED') {
+          console.log('✅ Real-time subscription ACTIVE - Dashboard will auto-update on login');
+        } else if (status === 'CHANNEL_ERROR') {
+          console.error('❌ Real-time subscription FAILED');
+        }
+      });
 
     // Cleanup on unmount
     return () => {
+      console.log('🔌 Cleaning up real-time subscription');
       supabase.removeChannel(channel);
-      console.log('Real-time subscription cleaned up');
     };
   }, []);
 
