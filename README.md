@@ -32,9 +32,9 @@ Traditional VPN-based security creates friction for remote employees while faili
 **TRUST-LOCK** is a Zero Trust Security Gateway that replaces binary "allow/deny" decisions with intelligent, real-time risk analysis. Every login attempt is evaluated across 4 security pillars:
 
 1. **Identity Verification** - Valid credentials (baseline authentication)
-2. **Device Analysis** - Trusted vs. unknown device fingerprints
-3. **Location Context** - Geolocation + impossible travel detection
-4. **Behavioral Patterns** - Access time, frequency, anomaly detection
+2. **Device Analysis** - Tracked device identifiers for trust assessment
+3. **Location Context** - Real-time IP geolocation with impossible travel detection
+4. **Behavioral Patterns** - Temporal and spatial anomaly analysis (impossible travel implemented; access frequency and time-of-day analysis in production roadmap)
 
 Instead of blocking legitimate employees or allowing compromised accounts, TRUST-LOCK makes **adaptive decisions**:
 
@@ -67,10 +67,11 @@ Instead of blocking legitimate employees or allowing compromised accounts, TRUST
 - Supabase (Managed PostgreSQL + Edge Functions)
 
 **Security Features:**
-- Device fingerprinting (Canvas + WebGL + Audio context hashing)
-- Haversine formula for impossible travel detection (distance/time validation)
-- Additive risk scoring model (0-100 scale with configurable thresholds)
+- Device identity tracking (demo uses consistent identifiers; production implementation would leverage Canvas, WebGL, and Audio context fingerprinting)
+- Impossible travel detection via Haversine formula (validates geographic distance against time delta)
+- Additive risk scoring model (0-100 scale with configurable decision thresholds)
 - Real-time audit logging with PostgreSQL LISTEN/NOTIFY
+- Security analysis explanations (curated messaging library for demo; production roadmap includes Claude AI integration)
 
 ---
 
@@ -182,13 +183,35 @@ Uses PostgreSQL's `LISTEN/NOTIFY` + Supabase Real-time:
 
 ---
 
+## 🎯 Demo Implementation Notes
+
+This hackathon submission demonstrates core Zero Trust principles with a working proof-of-concept. Key architectural decisions:
+
+**What's Fully Implemented:**
+- ✅ Real-time risk analysis engine with 4-pillar scoring model
+- ✅ PostgreSQL-backed audit logging with WebSocket live updates
+- ✅ Impossible travel detection using Haversine geographic distance calculation
+- ✅ IP geolocation integration (city, country, coordinates)
+- ✅ Adaptive decision logic (GRANTED/CHALLENGE/BLOCKED thresholds)
+- ✅ Production-ready Supabase Edge Functions (serverless, auto-scaling)
+
+**Demo Simplifications (Production Roadmap):**
+- 🔄 Device fingerprinting: Demo uses static identifiers; production would implement Canvas/WebGL/Audio hashing for browser uniqueness
+- 🔄 Authentication: Simplified password validation for demo; production requires Supabase Auth with proper session management
+- 🔄 AI explanations: Curated message library for demo; production would integrate Claude API for contextual threat analysis
+- 🔄 Behavioral analysis: Impossible travel implemented; time-of-day and access frequency patterns planned for production
+
+**Technical Soundness:** The underlying architecture (Edge Functions, real-time subscriptions, additive risk model) is production-ready. Demo simplifications ensure reliable scenario execution during live presentation while preserving the core security logic.
+
+---
+
 ## 🔒 Security Considerations
 
-- **No passwords stored:** Demo uses hardcoded validation (production would use Supabase Auth)
-- **Device fingerprinting:** Combines Canvas, WebGL, Audio context for 99%+ uniqueness
-- **Impossible travel detection:** Haversine formula + max 900 km/h (plane speed)
-- **Audit trail:** Every login attempt logged with risk factors and AI-generated explanations
-- **Environment variables:** All credentials in `.env` (never committed to Git)
+- **Demo authentication:** Uses simplified password validation for hackathon demonstration (production implementation would integrate Supabase Auth with bcrypt hashing and session management)
+- **Device tracking:** Consistent device identifiers per demo account enable reliable scenario testing (production would implement multi-factor browser fingerprinting using Canvas rendering, WebGL parameters, and Audio context characteristics)
+- **Impossible travel detection:** Fully functional Haversine distance calculation with 900 km/h maximum travel speed validation
+- **Comprehensive audit trail:** Every login attempt logged with timestamp, risk factors, geolocation data, and contextual explanations
+- **Environment security:** All API credentials managed via environment variables (never committed to version control)
 
 ---
 
