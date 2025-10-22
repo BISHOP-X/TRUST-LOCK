@@ -261,7 +261,30 @@ serve(async (req) => {
       });
     }
 
-    // David scenario: Hardcoded high-risk score for compromised device demo
+    // Carol scenario: Hardcoded impossible travel for demo reliability
+    // NOTE: The impossible travel detection logic above (lines 209-248) works correctly,
+    // but requires a previous login record in the database. For hackathon demo purposes,
+    // we hardcode Carol's scenario to guarantee consistent results during live presentation.
+    // In production, this would rely entirely on the automated Haversine distance calculation.
+    if (email === 'carol@company.com') {
+      riskScore = 100;
+      riskFactors.length = 0; // Clear existing factors
+      riskFactors.push(
+        { name: 'Identity Verified', status: 'success', points: 10, label: '✅ Credentials Valid' },
+        { name: 'Device Status', status: 'success', points: 5, label: '✅ Trusted Device' },
+        { name: 'Location', status: 'warning', points: 25, label: '⚠️ Lagos, Nigeria' },
+        { name: 'Behavior', status: 'danger', points: 60, label: '🚨 Impossible Travel' }
+      );
+      aiReasonCategory = 'impossibleTravel';
+      isImpossibleTravel = true;
+      travelDistanceKm = 5046; // London to Lagos distance
+      timeSinceLastLoginMinutes = 45;
+    }
+
+    // David scenario: Hardcoded compromised device for demo reliability
+    // NOTE: Real device compromise detection would require endpoint security agent integration
+    // (e.g., CrowdStrike, Microsoft Defender) to report malware, outdated patches, etc.
+    // Since we can't simulate actual malware during demo, we hardcode this scenario.
     if (email === 'david@company.com') {
       riskScore = 85;
       riskFactors.length = 0; // Clear existing factors

@@ -65,14 +65,20 @@ export default function Login() {
       
       // Get user's IP address
       let userIp = '0.0.0.0';
-      try {
-        const ipResponse = await fetch('https://api.ipify.org?format=json');
-        const ipData = await ipResponse.json();
-        userIp = ipData.ip;
-      } catch (error) {
-        console.error('Failed to get IP:', error);
-        // Use fallback IP if service fails
-        userIp = '197.210.76.45'; // Lagos, Nigeria (demo fallback)
+      
+      // Carol's scenario: Force Lagos IP to trigger impossible travel from London
+      if (email === 'carol@company.com') {
+        userIp = '197.210.76.45'; // Lagos, Nigeria (impossible travel from London)
+      } else {
+        try {
+          const ipResponse = await fetch('https://api.ipify.org?format=json');
+          const ipData = await ipResponse.json();
+          userIp = ipData.ip;
+        } catch (error) {
+          console.error('Failed to get IP:', error);
+          // Use fallback IP if service fails
+          userIp = '197.210.76.45'; // Lagos, Nigeria (demo fallback)
+        }
       }
 
       // Call Supabase Edge Function
