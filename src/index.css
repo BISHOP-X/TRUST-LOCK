@@ -8,7 +8,7 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Enterprise Banking Dashboard Theme */
+    /* Blue and Gold Banking Theme */
     --background: 220 17% 7%;
     --foreground: 210 40% 98%;
 
@@ -18,26 +18,26 @@ All colors MUST be HSL.
     --popover: 221 39% 11%;
     --popover-foreground: 210 40% 98%;
 
-    /* Deep Blue Primary */
-    --primary: 221 83% 32%;
+    /* Rich Blue Primary */
+    --primary: 220 90% 56%;
     --primary-foreground: 210 40% 98%;
 
-    /* Cyan Accent */
-    --secondary: 188 95% 43%;
+    /* Gold Accent */
+    --secondary: 45 100% 51%;
     --secondary-foreground: 221 83% 15%;
 
     --muted: 221 39% 20%;
     --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 188 95% 43%;
+    --accent: 45 100% 51%;
     --accent-foreground: 221 83% 15%;
 
     /* Danger Red */
     --destructive: 0 84% 51%;
     --destructive-foreground: 210 40% 98%;
 
-    /* Warning Amber */
-    --warning: 38 92% 50%;
+    /* Warning Gold */
+    --warning: 45 100% 51%;
     --warning-foreground: 221 83% 15%;
 
     /* Success Green */
@@ -46,7 +46,7 @@ All colors MUST be HSL.
 
     --border: 221 39% 20%;
     --input: 221 39% 20%;
-    --ring: 188 95% 43%;
+    --ring: 45 100% 51%;
 
     --radius: 0.75rem;
 
@@ -54,14 +54,14 @@ All colors MUST be HSL.
     --glass-bg: 221 39% 11% / 0.6;
     --glass-border: 210 40% 98% / 0.1;
     
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(221 83% 32%) 0%, hsl(188 95% 43%) 100%);
+    /* Gradients - Blue and Gold */
+    --gradient-primary: linear-gradient(135deg, hsl(220 90% 56%) 0%, hsl(45 100% 51%) 100%);
     --gradient-danger: linear-gradient(135deg, hsl(0 84% 51%) 0%, hsl(0 84% 35%) 100%);
     --gradient-success: linear-gradient(135deg, hsl(158 64% 52%) 0%, hsl(158 64% 38%) 100%);
-    --gradient-warning: linear-gradient(135deg, hsl(38 92% 50%) 0%, hsl(38 92% 38%) 100%);
+    --gradient-warning: linear-gradient(135deg, hsl(45 100% 51%) 0%, hsl(38 92% 38%) 100%);
     
-    /* Shadows */
-    --shadow-glow: 0 0 40px hsl(188 95% 43% / 0.3);
+    /* Shadows - Blue and Gold Glow */
+    --shadow-glow: 0 0 40px hsl(45 100% 51% / 0.3);
     --shadow-danger-glow: 0 0 40px hsl(0 84% 51% / 0.3);
     --shadow-card: 0 10px 30px -10px hsl(221 83% 15% / 0.5);
   }

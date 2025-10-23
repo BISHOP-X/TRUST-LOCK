@@ -6,9 +6,8 @@
  */
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { AlertTriangle, HelpCircle, Shield, Lock, Database, Zap, Wifi, Server, Users } from 'lucide-react';
+import { AlertTriangle, HelpCircle, Shield, Lock, Database, Zap, Wifi, Server, Users, CheckCircle2, XCircle } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { ParticleBackground } from './ParticleBackground';
 import { usePresentation } from '@/contexts/PresentationContext';
 import { useDashboard } from '@/contexts/DashboardContext';
 
@@ -26,140 +25,227 @@ export const ProblemView = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-      className="fixed inset-0 bg-gradient-to-br from-background via-background to-destructive/5 flex items-center justify-center z-50"
+      transition={{ duration: 0.8 }}
+      className="fixed inset-0 bg-gradient-to-br from-background via-background to-primary/5 flex items-center justify-center z-50"
     >
-      {/* Particle background */}
-      <ParticleBackground 
-        particleCount={100} 
-        particleOpacity={0.3} 
-        connectionOpacity={0.05}
-        particleSpeed={0.5}
-      />
-      {/* Animated background grid */}
-      <div className="absolute inset-0 opacity-10">
+      {/* Subtle background grid */}
+      <div className="absolute inset-0 opacity-[0.03]">
         <div className="absolute inset-0" style={{
-          backgroundImage: 'linear-gradient(rgba(239, 68, 68, 0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(239, 68, 68, 0.3) 1px, transparent 1px)',
-          backgroundSize: '50px 50px'
+          backgroundImage: 'linear-gradient(hsl(220 90% 56% / 0.5) 1px, transparent 1px), linear-gradient(90deg, hsl(220 90% 56% / 0.5) 1px, transparent 1px)',
+          backgroundSize: '80px 80px'
         }} />
       </div>
 
-      <div className="relative z-10 w-full h-full flex flex-col items-center justify-center px-8 py-8">
-        {/* Title - Compact */}
+      {/* Subtle accent orbs */}
+      <motion.div
+        className="absolute top-20 right-20 w-96 h-96 bg-accent/5 rounded-full blur-3xl"
+        animate={{
+          scale: [1, 1.2, 1],
+          opacity: [0.3, 0.5, 0.3]
+        }}
+        transition={{
+          duration: 8,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      />
+      <motion.div
+        className="absolute bottom-20 left-20 w-80 h-80 bg-primary/5 rounded-full blur-3xl"
+        animate={{
+          scale: [1, 1.3, 1],
+          opacity: [0.2, 0.4, 0.2]
+        }}
+        transition={{
+          duration: 10,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      />
+
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-12">
+        {/* Compact Title */}
         <motion.div
-          initial={{ y: -20, opacity: 0 }}
+          initial={{ y: -10, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.2, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="mb-8"
+          transition={{ delay: 0.2, duration: 0.6 }}
+          className="flex items-center justify-center gap-3 mb-10"
         >
-          <AlertTriangle className="h-16 w-16 text-destructive mx-auto mb-3 drop-shadow-[0_0_20px_rgba(239,68,68,0.4)]" />
-          <h1 className="text-5xl font-black text-destructive tracking-tight">
-            THE PROBLEM
-          </h1>
+          <motion.div
+            animate={{
+              rotate: [0, -3, 3, 0],
+            }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          >
+            <AlertTriangle className="h-11 w-11 text-destructive drop-shadow-lg" strokeWidth={2} />
+          </motion.div>
+          <h1 className="text-4xl font-bold text-destructive">THE PROBLEM</h1>
         </motion.div>
 
-        {/* Two-column layout */}
-        <motion.div
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.5, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="grid grid-cols-2 gap-8 max-w-7xl w-full"
-        >
-          {/* Left: The Reality */}
-          <div className="bg-card/40 backdrop-blur-sm border border-border rounded-2xl p-8">
-            <p className="text-xl text-muted-foreground font-medium mb-6">
-              Traditional security is obsolete
-            </p>
+        {/* Main Content - Two Columns */}
+        <div className="grid grid-cols-2 gap-12 items-center">
+          {/* Left: Modern Work Environment */}
+          <motion.div
+            initial={{ x: -20, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ delay: 0.4, duration: 0.6 }}
+            className="space-y-6"
+          >
+            <div className="relative">
+              <motion.div
+                className="absolute -inset-2 bg-gradient-to-r from-primary/10 to-accent/10 rounded-2xl blur-xl"
+                animate={{
+                  opacity: [0.3, 0.6, 0.3]
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity
+                }}
+              />
+              <p className="relative text-xl text-muted-foreground font-medium text-center mb-8 bg-card/50 backdrop-blur-sm rounded-xl py-3 border border-primary/10">
+                Traditional security is obsolete
+              </p>
+            </div>
+
             <div className="space-y-4">
               <motion.div
-                initial={{ x: -20, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                transition={{ delay: 0.8, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                className="flex items-center gap-4"
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.6 }}
+                className="relative group"
               >
-                <Wifi className="h-10 w-10 text-primary flex-shrink-0" />
-                <p className="text-sm text-muted-foreground">Work from anywhere</p>
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-primary to-primary/50 rounded-xl opacity-20 group-hover:opacity-30 transition blur-sm" />
+                <div className="relative flex items-center gap-4 bg-card/60 backdrop-blur-sm border border-primary/20 rounded-xl p-4">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-primary/20 rounded-lg blur-md" />
+                    <Wifi className="relative h-8 w-8 text-primary flex-shrink-0" strokeWidth={1.5} />
+                  </div>
+                  <p className="text-base text-foreground">Work from anywhere</p>
+                </div>
               </motion.div>
-              <motion.div
-                initial={{ x: -20, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                transition={{ delay: 1.0, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                className="flex items-center gap-4"
-              >
-                <Users className="h-10 w-10 text-primary flex-shrink-0" />
-                <p className="text-sm text-muted-foreground">Personal devices (BYOD)</p>
-              </motion.div>
-              <motion.div
-                initial={{ x: -20, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                transition={{ delay: 1.2, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                className="flex items-center gap-4"
-              >
-                <Server className="h-10 w-10 text-primary flex-shrink-0" />
-                <p className="text-sm text-muted-foreground">Untrusted networks</p>
-              </motion.div>
-            </div>
-          </div>
 
-          {/* Right: The Critical Vulnerability */}
-          <motion.div
-            initial={{ scale: 0.95, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 1.4, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className={`bg-gradient-to-br ${breachStarted ? 'from-destructive/20 to-destructive/5' : 'from-card/60 to-background/80'} backdrop-blur-sm border-2 ${breachStarted ? 'border-destructive' : 'border-border'} rounded-2xl p-8 transition-all duration-1000 ease-out flex flex-col justify-center`}
-          >
-            <motion.p 
-              className="text-2xl font-bold text-center mb-4"
-              animate={breachStarted ? { color: '#ef4444' } : { color: '#e2e8f0' }}
-              transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-            >
-              1 stolen VPN password
-            </motion.p>
-            <div className="text-4xl text-center my-4 text-muted-foreground">=</div>
-            <motion.p 
-              className="text-3xl font-black text-center mb-6"
-              animate={breachStarted ? { 
-                color: '#ef4444',
-                textShadow: '0 0 30px rgba(239, 68, 68, 0.5)'
-              } : { color: '#94a3b8' }}
-              transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-            >
-              FULL NETWORK ACCESS
-            </motion.p>
-            
-            {/* Pre-allocated space for risk factors - prevents layout shift */}
-            <div className="pt-6 border-t border-destructive/30 min-h-[100px]">
               <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: breachStarted ? 1 : 0 }}
-                transition={{ delay: 0.5, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-                className="grid grid-cols-2 gap-3 text-left"
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.8 }}
+                className="relative group"
               >
-                <div className="flex items-start gap-2">
-                  <div className="text-destructive text-sm">⚠️</div>
-                  <p className="text-xs text-muted-foreground">Customer data</p>
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-accent to-accent/50 rounded-xl opacity-20 group-hover:opacity-30 transition blur-sm" />
+                <div className="relative flex items-center gap-4 bg-card/60 backdrop-blur-sm border border-accent/20 rounded-xl p-4">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-accent/20 rounded-lg blur-md" />
+                    <Users className="relative h-8 w-8 text-accent flex-shrink-0" strokeWidth={1.5} />
+                  </div>
+                  <p className="text-base text-foreground">Personal devices (BYOD)</p>
                 </div>
-                <div className="flex items-start gap-2">
-                  <div className="text-destructive text-sm">⚠️</div>
-                  <p className="text-xs text-muted-foreground">Core systems</p>
-                </div>
-                <div className="flex items-start gap-2">
-                  <div className="text-destructive text-sm">⚠️</div>
-                  <p className="text-xs text-muted-foreground">Admin tools</p>
-                </div>
-                <div className="flex items-start gap-2">
-                  <div className="text-destructive text-sm">⚠️</div>
-                  <p className="text-xs text-muted-foreground">Undetectable</p>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 1.0 }}
+                className="relative group"
+              >
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-primary to-primary/50 rounded-xl opacity-20 group-hover:opacity-30 transition blur-sm" />
+                <div className="relative flex items-center gap-4 bg-card/60 backdrop-blur-sm border border-primary/20 rounded-xl p-4">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-primary/20 rounded-lg blur-md" />
+                    <Server className="relative h-8 w-8 text-primary flex-shrink-0" strokeWidth={1.5} />
+                  </div>
+                  <p className="text-base text-foreground">Untrusted networks</p>
                 </div>
               </motion.div>
             </div>
           </motion.div>
-        </motion.div>
 
+          {/* Right: The Vulnerability */}
+          <motion.div
+            initial={{ x: 20, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ delay: 1.2, duration: 0.6 }}
+            className="relative"
+          >
+            {/* Glow effect when breached */}
+            {breachStarted && (
+              <motion.div
+                className="absolute -inset-2 bg-gradient-to-br from-destructive/20 to-destructive/5 rounded-3xl blur-2xl"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 1 }}
+              />
+            )}
+            
+            <div className={`relative bg-gradient-to-br ${breachStarted ? 'from-destructive/10 to-destructive/5' : 'from-card/40 to-background'} backdrop-blur-sm border-2 ${breachStarted ? 'border-destructive/40' : 'border-border/50'} rounded-2xl p-8 transition-all duration-1000`}>
+              <div className="text-center space-y-6">
+                <motion.div
+                  className="flex items-center justify-center gap-3"
+                  animate={breachStarted ? { color: '#ef4444' } : { color: '#e2e8f0' }}
+                  transition={{ duration: 1 }}
+                >
+                  <Lock className="h-7 w-7" />
+                  <p className="text-xl font-semibold">1 stolen VPN password</p>
+                </motion.div>
+
+                <motion.div
+                  className="text-3xl font-black"
+                  animate={breachStarted ? { color: '#ef4444', scale: [1, 1.1, 1] } : { color: '#64748b' }}
+                  transition={{ duration: 1 }}
+                >
+                  =
+                </motion.div>
+
+                <motion.div
+                  className="flex items-center justify-center gap-3"
+                  animate={breachStarted ? { 
+                    color: '#ef4444',
+                    textShadow: '0 0 20px rgba(239, 68, 68, 0.4)'
+                  } : { color: '#94a3b8' }}
+                  transition={{ duration: 1 }}
+                >
+                  <XCircle className="h-8 w-8" />
+                  <p className="text-2xl font-black">FULL NETWORK ACCESS</p>
+                </motion.div>
+
+                {/* Risk factors */}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: breachStarted ? 1 : 0 }}
+                  transition={{ delay: 0.5, duration: 0.8 }}
+                  className="pt-6 border-t border-destructive/20 mt-6"
+                >
+                  <div className="grid grid-cols-2 gap-3">
+                    {[
+                      { icon: Database, text: 'Customer data' },
+                      { icon: Server, text: 'Core systems' },
+                      { icon: Shield, text: 'Admin tools' },
+                      { icon: AlertTriangle, text: 'Undetectable' }
+                    ].map((risk, idx) => (
+                      <motion.div
+                        key={idx}
+                        initial={{ scale: 0 }}
+                        animate={breachStarted ? { scale: 1 } : { scale: 0 }}
+                        transition={{ delay: 0.7 + idx * 0.1, type: "spring" }}
+                        className="flex items-center gap-2 text-destructive/80"
+                      >
+                        <risk.icon className="h-4 w-4" strokeWidth={2} />
+                        <p className="text-xs font-medium">{risk.text}</p>
+                      </motion.div>
+                    ))}
+                  </div>
+                </motion.div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Footer */}
         <motion.p 
-          className="text-xs text-muted-foreground mt-8"
+          className="text-center text-xs text-muted-foreground mt-10"
           animate={{ opacity: [0.5, 1, 0.5] }}
-          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          transition={{ duration: 2, repeat: Infinity }}
         >
           Press Enter to continue
         </motion.p>
@@ -178,30 +264,143 @@ export const QuestionView = () => {
       transition={{ duration: 0.6 }}
       className="fixed inset-0 bg-gradient-to-br from-background via-background to-primary/5 flex items-center justify-center z-50"
     >
-      {/* Particle background */}
-      <ParticleBackground 
-        particleCount={100} 
-        particleOpacity={0.3} 
-        connectionOpacity={0.05}
-        particleSpeed={0.5}
-      />
-      <div className="text-center max-w-6xl px-12">
+      {/* Subtle floating question marks - smaller and more transparent */}
+      {[...Array(6)].map((_, i) => (
         <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ delay: 0.2 }}
+          key={i}
+          className="absolute text-4xl text-accent/5 font-bold"
+          style={{
+            left: `${15 + i * 14}%`,
+            top: `${25 + (i % 3) * 15}%`,
+          }}
+          animate={{
+            y: [0, -15, 0],
+            opacity: [0.03, 0.08, 0.03],
+          }}
+          transition={{
+            duration: 4 + i * 0.5,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: i * 0.3,
+          }}
         >
-          <HelpCircle className="h-32 w-32 text-primary mx-auto mb-8" />
+          ?
         </motion.div>
-        <h1 className="text-5xl font-bold text-foreground mb-8">The Challenge</h1>
-        <p className="text-4xl text-primary font-semibold leading-relaxed">
-          How do we secure sensitive data in a<br />
-          <span className="text-secondary">'work-from-anywhere'</span> world<br />
-          WITHOUT compromising productivity?
-        </p>
-        <p className="text-sm text-muted-foreground mt-12 animate-pulse">
+      ))}
+
+      {/* Decorative accent orbs */}
+      <motion.div
+        className="absolute top-1/4 right-1/4 w-64 h-64 bg-accent/5 rounded-full blur-3xl"
+        animate={{
+          scale: [1, 1.2, 1],
+          opacity: [0.2, 0.4, 0.2]
+        }}
+        transition={{
+          duration: 8,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      />
+      <motion.div
+        className="absolute bottom-1/4 left-1/4 w-72 h-72 bg-primary/5 rounded-full blur-3xl"
+        animate={{
+          scale: [1, 1.3, 1],
+          opacity: [0.3, 0.5, 0.3]
+        }}
+        transition={{
+          duration: 10,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      />
+      
+      <div className="text-center max-w-5xl px-12 relative z-10">
+        {/* Icon with enhanced design */}
+        <motion.div
+          initial={{ scale: 0, rotate: -180 }}
+          animate={{ scale: 1, rotate: 0 }}
+          transition={{ delay: 0.2, type: "spring", stiffness: 100 }}
+          className="relative inline-block mb-8"
+        >
+          {/* Multiple glow layers */}
+          <motion.div
+            className="absolute inset-0 blur-3xl rounded-full"
+            style={{ background: 'hsl(45 100% 51% / 0.15)' }}
+            animate={{ 
+              scale: [1, 1.4, 1],
+              opacity: [0.3, 0.6, 0.3]
+            }}
+            transition={{ 
+              duration: 3, 
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+          <motion.div
+            className="absolute inset-0 blur-xl rounded-full"
+            style={{ background: 'hsl(220 90% 56% / 0.1)' }}
+            animate={{ 
+              scale: [1.2, 1, 1.2],
+              opacity: [0.2, 0.4, 0.2]
+            }}
+            transition={{ 
+              duration: 4, 
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 0.5
+            }}
+          />
+          
+          {/* Icon container with gradient border */}
+          <div className="relative bg-gradient-to-br from-card/50 to-background/50 backdrop-blur-sm rounded-full p-6 border border-accent/20">
+            <HelpCircle className="h-20 w-20 text-accent relative z-10" strokeWidth={2} />
+          </div>
+        </motion.div>
+
+        {/* Title */}
+        <motion.h1 
+          className="text-4xl font-bold text-foreground mb-6"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+        >
+          The Challenge
+        </motion.h1>
+
+        {/* Main question - styled card */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          className="relative"
+        >
+          {/* Gradient glow background */}
+          <div className="absolute -inset-4 bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 rounded-3xl blur-2xl opacity-50" />
+          
+          {/* Content card */}
+          <div className="relative bg-card/40 backdrop-blur-md border border-primary/20 rounded-2xl p-8">
+            <p className="text-3xl text-primary font-semibold leading-relaxed">
+              How do we secure sensitive data in a<br />
+              <span className="bg-gradient-to-r from-accent to-accent/80 bg-clip-text text-transparent">'work-from-anywhere'</span> world<br />
+              <span className="text-foreground">WITHOUT compromising productivity?</span>
+            </p>
+          </div>
+
+          {/* Decorative corner accents */}
+          <div className="absolute -top-2 -left-2 w-4 h-4 border-t-2 border-l-2 border-accent/40 rounded-tl-lg" />
+          <div className="absolute -top-2 -right-2 w-4 h-4 border-t-2 border-r-2 border-primary/40 rounded-tr-lg" />
+          <div className="absolute -bottom-2 -left-2 w-4 h-4 border-b-2 border-l-2 border-primary/40 rounded-bl-lg" />
+          <div className="absolute -bottom-2 -right-2 w-4 h-4 border-b-2 border-r-2 border-accent/40 rounded-br-lg" />
+        </motion.div>
+
+        <motion.p 
+          className="text-sm text-muted-foreground mt-10"
+          animate={{ opacity: [0.5, 1, 0.5] }}
+          transition={{ duration: 2, repeat: Infinity }}
+          initial={{ opacity: 0 }}
+        >
           Press Enter to continue
-        </p>
+        </motion.p>
       </div>
     </motion.div>
   );
@@ -215,17 +414,47 @@ export const SolutionIntro = () => {
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.6 }}
-      className="fixed inset-0 bg-gradient-to-br from-primary/30 to-background flex items-center justify-center z-50"
+      className="fixed inset-0 bg-gradient-to-br from-primary/20 via-background to-accent/10 flex items-center justify-center z-50"
     >
-      {/* Particle background */}
-      <ParticleBackground 
-        particleCount={120} 
-        particleOpacity={0.4} 
-        connectionOpacity={0.08}
-        particleSpeed={0.5}
-      />
-      <div className="text-center max-w-5xl px-8">
-        {/* Animated Shield - Same as Landing Page */}
+      {/* Orbiting shield icons */}
+      {[0, 1, 2].map((i) => (
+        <motion.div
+          key={i}
+          className="absolute"
+          style={{
+            left: '50%',
+            top: '50%',
+          }}
+          animate={{
+            rotate: 360,
+          }}
+          transition={{
+            duration: 10 + i * 5,
+            repeat: Infinity,
+            ease: "linear",
+          }}
+        >
+          <motion.div
+            style={{
+              x: 200 + i * 50,
+              y: -100,
+            }}
+            animate={{
+              scale: [1, 1.2, 1],
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              delay: i * 0.3,
+            }}
+          >
+            <Shield className="h-8 w-8 text-accent/20" />
+          </motion.div>
+        </motion.div>
+      ))}
+      
+      <div className="text-center max-w-5xl px-8 relative z-10">
+        {/* Logo */}
         <motion.div
           initial={{ scale: 0, rotateY: -180 }}
           animate={{ scale: 1, rotateY: 0 }}
@@ -235,7 +464,6 @@ export const SolutionIntro = () => {
           <motion.div
             className="relative"
             animate={{ 
-              rotateY: [0, 10, -10, 0],
               scale: [1, 1.05, 1]
             }}
             transition={{ 
@@ -244,9 +472,9 @@ export const SolutionIntro = () => {
               ease: "easeInOut"
             }}
           >
-            {/* Glowing background */}
             <motion.div
-              className="absolute inset-0 bg-primary/20 blur-3xl rounded-full"
+              className="absolute inset-0 blur-3xl rounded-full"
+              style={{ background: 'hsl(45 100% 51% / 0.2)' }}
               animate={{ 
                 scale: [1, 1.2, 1],
                 opacity: [0.5, 0.8, 0.5]
@@ -258,77 +486,14 @@ export const SolutionIntro = () => {
               }}
             />
             
-            {/* Shield SVG */}
-            <svg
-              width="160"
-              height="160"
-              viewBox="0 0 200 200"
-              className="relative z-10 drop-shadow-2xl"
-            >
-              {/* Outer shield glow */}
-              <motion.path
-                d="M100 20 L160 50 L160 110 Q160 160 100 180 Q40 160 40 110 L40 50 Z"
-                fill="url(#shieldGradient)"
-                stroke="url(#strokeGradient)"
-                strokeWidth="3"
-                initial={{ pathLength: 0, opacity: 0 }}
-                animate={{ pathLength: 1, opacity: 1 }}
-                transition={{ delay: 0.4, duration: 1.5, ease: "easeOut" }}
-              />
-              
-              {/* Inner circuit pattern */}
-              <motion.g
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 1.0, duration: 0.8 }}
-              >
-                {/* Vertical lines */}
-                <line x1="100" y1="60" x2="100" y2="140" stroke="rgba(59, 130, 246, 0.4)" strokeWidth="2" />
-                <line x1="80" y1="70" x2="80" y2="130" stroke="rgba(59, 130, 246, 0.3)" strokeWidth="1.5" />
-                <line x1="120" y1="70" x2="120" y2="130" stroke="rgba(59, 130, 246, 0.3)" strokeWidth="1.5" />
-                
-                {/* Horizontal lines */}
-                <line x1="70" y1="90" x2="130" y2="90" stroke="rgba(59, 130, 246, 0.3)" strokeWidth="1.5" />
-                <line x1="70" y1="110" x2="130" y2="110" stroke="rgba(59, 130, 246, 0.3)" strokeWidth="1.5" />
-                
-                {/* Circuit nodes */}
-                <circle cx="100" cy="90" r="4" fill="#3b82f6" />
-                <circle cx="100" cy="110" r="4" fill="#3b82f6" />
-                <circle cx="80" cy="90" r="3" fill="#3b82f6" opacity="0.7" />
-                <circle cx="120" cy="90" r="3" fill="#3b82f6" opacity="0.7" />
-                <circle cx="80" cy="110" r="3" fill="#3b82f6" opacity="0.7" />
-                <circle cx="120" cy="110" r="3" fill="#3b82f6" opacity="0.7" />
-              </motion.g>
-              
-              {/* Lock icon in center */}
-              <motion.g
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 1.3, type: "spring", stiffness: 200 }}
-              >
-                <rect x="85" y="95" width="30" height="25" rx="3" fill="#3b82f6" />
-                <path
-                  d="M90 95 L90 85 Q90 75 100 75 Q110 75 110 85 L110 95"
-                  fill="none"
-                  stroke="#3b82f6"
-                  strokeWidth="4"
-                  strokeLinecap="round"
-                />
-                <circle cx="100" cy="107" r="3" fill="white" />
-              </motion.g>
-
-              {/* Gradient definitions */}
-              <defs>
-                <linearGradient id="shieldGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.3" />
-                  <stop offset="100%" stopColor="#1e40af" stopOpacity="0.5" />
-                </linearGradient>
-                <linearGradient id="strokeGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="#60a5fa" />
-                  <stop offset="100%" stopColor="#3b82f6" />
-                </linearGradient>
-              </defs>
-            </svg>
+            <motion.img
+              src="/src/Logo/logo-no-bg.png"
+              alt="TRUST-LOCK Logo"
+              className="relative z-10 w-40 h-40 drop-shadow-2xl"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4, duration: 1.5 }}
+            />
           </motion.div>
         </motion.div>
 
@@ -339,10 +504,10 @@ export const SolutionIntro = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.6, duration: 0.8 }}
         >
-          TRUST-LOCK
+          TRUSTLOCK
         </motion.h1>
         <motion.p 
-          className="text-3xl text-primary/90"
+          className="text-3xl bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent font-semibold"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.8, duration: 0.8 }}
@@ -367,25 +532,25 @@ interface PillarsViewProps {
 }
 
 export const PillarsView = ({ pillarIndex = 1 }: PillarsViewProps) => {
-  // Define pillar content
+  // Define pillar content with blue and gold theme
   const pillars = [
     {
       icon: Lock,
-      color: 'primary',
+      colorClass: 'primary',
       title: 'Identity Verification',
       subtitle: 'WHO is accessing?',
       description: 'Continuous authentication and user behavior analysis'
     },
     {
       icon: Database,
-      color: 'warning',
+      colorClass: 'accent',
       title: 'Device Intelligence',
       subtitle: 'WHAT device is used?',
       description: 'Real-time device health scoring and compliance checks'
     },
     {
       icon: Zap,
-      color: 'success',
+      colorClass: 'primary',
       title: 'Context Analysis',
       subtitle: 'WHERE, WHEN, WHY?',
       description: 'Location, time, and behavioral pattern analysis'
@@ -394,6 +559,7 @@ export const PillarsView = ({ pillarIndex = 1 }: PillarsViewProps) => {
 
   const currentPillar = pillars[pillarIndex - 1];
   const Icon = currentPillar.icon;
+  const isGold = currentPillar.colorClass === 'accent';
 
   return (
     <motion.div
@@ -403,37 +569,189 @@ export const PillarsView = ({ pillarIndex = 1 }: PillarsViewProps) => {
       transition={{ duration: 0.6 }}
       className="fixed inset-0 bg-gradient-to-br from-background via-background to-primary/5 flex items-center justify-center z-50"
     >
-      {/* Particle background */}
-      <ParticleBackground 
-        particleCount={100} 
-        particleOpacity={0.3} 
-        connectionOpacity={0.05}
-        particleSpeed={0.5}
+      {/* Decorative background orbs */}
+      <motion.div
+        className={`absolute top-1/4 ${isGold ? 'right-1/4' : 'left-1/4'} w-96 h-96 ${isGold ? 'bg-accent/5' : 'bg-primary/5'} rounded-full blur-3xl`}
+        animate={{
+          scale: [1, 1.2, 1],
+          opacity: [0.3, 0.5, 0.3]
+        }}
+        transition={{
+          duration: 8,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
       />
-      <div className="text-center max-w-4xl px-12">
+      
+      {/* Subtle geometric lines */}
+      <div className="absolute inset-0 overflow-hidden opacity-[0.03]">
+        {[...Array(3)].map((_, i) => (
+          <motion.div
+            key={i}
+            className={`absolute h-px ${isGold ? 'bg-accent' : 'bg-primary'}`}
+            style={{
+              top: `${25 + i * 25}%`,
+              width: '100%',
+            }}
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: 1 }}
+            transition={{
+              duration: 1.5,
+              delay: i * 0.15,
+              ease: "easeOut"
+            }}
+          />
+        ))}
+      </div>
+      
+      <div className="relative z-10 w-full max-w-6xl mx-auto px-12">
+        {/* Pillar indicator at top */}
         <motion.div
-          initial={{ scale: 0, rotateY: -180 }}
-          animate={{ scale: 1, rotateY: 0 }}
-          transition={{ delay: 0.2, type: "spring", bounce: 0.5 }}
-          className={`bg-gradient-to-br from-${currentPillar.color}/20 to-${currentPillar.color}/5 p-12 rounded-3xl border-2 border-${currentPillar.color}/50 shadow-2xl`}
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          className="flex justify-center gap-3 mb-8"
         >
-          <Icon className={`h-32 w-32 text-${currentPillar.color} mx-auto mb-6`} />
-          <span className="text-sm font-bold text-muted-foreground tracking-widest uppercase">
-            Pillar {pillarIndex} of 3
-          </span>
-          <h1 className="text-5xl font-bold text-foreground mt-2 mb-4">
-            {currentPillar.title}
-          </h1>
-          <p className={`text-3xl font-semibold text-${currentPillar.color} mb-6`}>
-            {currentPillar.subtitle}
-          </p>
-          <p className="text-xl text-muted-foreground leading-relaxed">
-            {currentPillar.description}
-          </p>
+          {[1, 2, 3].map((num) => (
+            <div
+              key={num}
+              className={`h-2 w-16 rounded-full transition-all duration-500 ${
+                num === pillarIndex
+                  ? isGold
+                    ? 'bg-accent w-24'
+                    : 'bg-primary w-24'
+                  : 'bg-muted-foreground/20'
+              }`}
+            />
+          ))}
         </motion.div>
-        <p className="text-sm text-muted-foreground mt-12 animate-pulse">
+
+        {/* Main content - Horizontal layout */}
+        <div className="grid grid-cols-5 gap-8 items-center">
+          {/* Left: Large Icon */}
+          <motion.div
+            initial={{ scale: 0, rotateY: -180 }}
+            animate={{ scale: 1, rotateY: 0 }}
+            transition={{ delay: 0.3, type: "spring", stiffness: 100 }}
+            className="col-span-2 flex justify-center"
+          >
+            <div className="relative">
+              {/* Outer glow ring */}
+              <motion.div
+                className={`absolute inset-0 ${isGold ? 'bg-accent/10' : 'bg-primary/10'} rounded-full blur-3xl`}
+                animate={{ 
+                  scale: [1, 1.4, 1],
+                  opacity: [0.4, 0.7, 0.4]
+                }}
+                transition={{ 
+                  duration: 3, 
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              />
+              
+              {/* Icon container with gradient */}
+              <motion.div
+                className={`relative bg-gradient-to-br ${
+                  isGold 
+                    ? 'from-accent/20 via-accent/10 to-accent/5' 
+                    : 'from-primary/20 via-primary/10 to-primary/5'
+                } backdrop-blur-sm rounded-3xl p-12 border-2 ${
+                  isGold ? 'border-accent/30' : 'border-primary/30'
+                }`}
+                animate={{
+                  rotate: [0, 2, -2, 0],
+                }}
+                transition={{
+                  duration: 6,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              >
+                <Icon className={`h-32 w-32 ${isGold ? 'text-accent' : 'text-primary'}`} strokeWidth={1.5} />
+              </motion.div>
+
+              {/* Decorative corner elements */}
+              <div className={`absolute -top-3 -left-3 w-6 h-6 border-t-4 border-l-4 ${isGold ? 'border-accent/50' : 'border-primary/50'} rounded-tl-xl`} />
+              <div className={`absolute -bottom-3 -right-3 w-6 h-6 border-b-4 border-r-4 ${isGold ? 'border-accent/50' : 'border-primary/50'} rounded-br-xl`} />
+            </div>
+          </motion.div>
+
+          {/* Right: Content */}
+          <motion.div
+            initial={{ x: 30, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ delay: 0.5, duration: 0.6 }}
+            className="col-span-3 space-y-6"
+          >
+            {/* Pillar number badge */}
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.6, type: "spring" }}
+              className={`inline-block px-4 py-2 rounded-full ${
+                isGold ? 'bg-accent/10 border-accent/30' : 'bg-primary/10 border-primary/30'
+              } border text-xs font-bold tracking-widest uppercase text-muted-foreground`}
+            >
+              Pillar {pillarIndex} of 3
+            </motion.div>
+
+            {/* Title */}
+            <h1 className="text-5xl font-bold text-foreground leading-tight">
+              {currentPillar.title}
+            </h1>
+
+            {/* Subtitle with accent */}
+            <div className="flex items-center gap-4">
+              <div className={`h-1 w-12 rounded-full ${isGold ? 'bg-accent' : 'bg-primary'}`} />
+              <p className={`text-3xl font-semibold ${isGold ? 'text-accent' : 'text-primary'}`}>
+                {currentPillar.subtitle}
+              </p>
+            </div>
+
+            {/* Description card */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8 }}
+              className="relative"
+            >
+              <div className={`absolute -inset-2 ${isGold ? 'bg-accent/5' : 'bg-primary/5'} rounded-xl blur-xl`} />
+              <div className="relative bg-card/40 backdrop-blur-sm border border-border/50 rounded-xl p-6">
+                <p className="text-lg text-muted-foreground leading-relaxed">
+                  {currentPillar.description}
+                </p>
+              </div>
+            </motion.div>
+
+            {/* Feature highlights */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1.0 }}
+              className="flex gap-3 pt-2"
+            >
+              {[...Array(3)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 1.1 + i * 0.1, type: "spring" }}
+                  className={`w-2 h-2 rounded-full ${isGold ? 'bg-accent' : 'bg-primary'}`}
+                />
+              ))}
+            </motion.div>
+          </motion.div>
+        </div>
+
+        {/* Footer */}
+        <motion.p 
+          className="text-center text-sm text-muted-foreground mt-10"
+          animate={{ opacity: [0.5, 1, 0.5] }}
+          transition={{ duration: 2, repeat: Infinity }}
+        >
           Press Enter to continue
-        </p>
+        </motion.p>
       </div>
     </motion.div>
   );
@@ -460,18 +778,33 @@ export const TransitionView = () => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.8 }}
-      className="fixed inset-0 bg-gradient-to-br from-background via-primary/10 to-background flex items-center justify-center z-50"
+      className="fixed inset-0 bg-gradient-to-br from-background via-primary/10 to-accent/10 flex items-center justify-center z-50"
     >
-      {/* Particle background */}
-      <ParticleBackground 
-        particleCount={80} 
-        particleOpacity={0.3} 
-        connectionOpacity={0.05}
-        particleSpeed={0.3}
-      />
+      {/* Animated shield constellation */}
+      {[...Array(8)].map((_, i) => (
+        <motion.div
+          key={i}
+          className="absolute"
+          style={{
+            left: `${20 + i * 10}%`,
+            top: `${20 + (i % 3) * 25}%`,
+          }}
+          animate={{
+            opacity: [0.1, 0.3, 0.1],
+            scale: [1, 1.2, 1],
+          }}
+          transition={{
+            duration: 2 + i * 0.3,
+            repeat: Infinity,
+            delay: i * 0.2,
+          }}
+        >
+          <CheckCircle2 className="h-6 w-6 text-accent" />
+        </motion.div>
+      ))}
       
-      <div className="text-center space-y-12 px-4">
-        {/* Animated Shield - Same as Landing/Solution */}
+      <div className="text-center space-y-12 px-4 relative z-10">
+        {/* Logo */}
         <motion.div
           initial={{ scale: 0, rotateY: -180 }}
           animate={{ scale: 1, rotateY: 0 }}
@@ -481,7 +814,6 @@ export const TransitionView = () => {
           <motion.div
             className="relative"
             animate={{ 
-              rotateY: [0, 10, -10, 0],
               scale: [1, 1.05, 1]
             }}
             transition={{ 
@@ -490,9 +822,9 @@ export const TransitionView = () => {
               ease: "easeInOut"
             }}
           >
-            {/* Glowing background */}
             <motion.div
-              className="absolute inset-0 bg-primary/20 blur-3xl rounded-full"
+              className="absolute inset-0 blur-3xl rounded-full"
+              style={{ background: 'hsl(45 100% 51% / 0.2)' }}
               animate={{ 
                 scale: [1, 1.2, 1],
                 opacity: [0.5, 0.8, 0.5]
@@ -504,77 +836,14 @@ export const TransitionView = () => {
               }}
             />
             
-            {/* Shield SVG */}
-            <svg
-              width="160"
-              height="160"
-              viewBox="0 0 200 200"
-              className="relative z-10 drop-shadow-2xl"
-            >
-              {/* Outer shield glow */}
-              <motion.path
-                d="M100 20 L160 50 L160 110 Q160 160 100 180 Q40 160 40 110 L40 50 Z"
-                fill="url(#shieldGradient)"
-                stroke="url(#strokeGradient)"
-                strokeWidth="3"
-                initial={{ pathLength: 0, opacity: 0 }}
-                animate={{ pathLength: 1, opacity: 1 }}
-                transition={{ delay: 0.5, duration: 1.5, ease: "easeOut" }}
-              />
-              
-              {/* Inner circuit pattern */}
-              <motion.g
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 1.2, duration: 0.8 }}
-              >
-                {/* Vertical lines */}
-                <line x1="100" y1="60" x2="100" y2="140" stroke="rgba(59, 130, 246, 0.4)" strokeWidth="2" />
-                <line x1="80" y1="70" x2="80" y2="130" stroke="rgba(59, 130, 246, 0.3)" strokeWidth="1.5" />
-                <line x1="120" y1="70" x2="120" y2="130" stroke="rgba(59, 130, 246, 0.3)" strokeWidth="1.5" />
-                
-                {/* Horizontal lines */}
-                <line x1="70" y1="90" x2="130" y2="90" stroke="rgba(59, 130, 246, 0.3)" strokeWidth="1.5" />
-                <line x1="70" y1="110" x2="130" y2="110" stroke="rgba(59, 130, 246, 0.3)" strokeWidth="1.5" />
-                
-                {/* Circuit nodes */}
-                <circle cx="100" cy="90" r="4" fill="#3b82f6" />
-                <circle cx="100" cy="110" r="4" fill="#3b82f6" />
-                <circle cx="80" cy="90" r="3" fill="#3b82f6" opacity="0.7" />
-                <circle cx="120" cy="90" r="3" fill="#3b82f6" opacity="0.7" />
-                <circle cx="80" cy="110" r="3" fill="#3b82f6" opacity="0.7" />
-                <circle cx="120" cy="110" r="3" fill="#3b82f6" opacity="0.7" />
-              </motion.g>
-              
-              {/* Lock icon in center */}
-              <motion.g
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 1.5, type: "spring", stiffness: 200 }}
-              >
-                <rect x="85" y="95" width="30" height="25" rx="3" fill="#3b82f6" />
-                <path
-                  d="M90 95 L90 85 Q90 75 100 75 Q110 75 110 85 L110 95"
-                  fill="none"
-                  stroke="#3b82f6"
-                  strokeWidth="4"
-                  strokeLinecap="round"
-                />
-                <circle cx="100" cy="107" r="3" fill="white" />
-              </motion.g>
-
-              {/* Gradient definitions */}
-              <defs>
-                <linearGradient id="shieldGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.3" />
-                  <stop offset="100%" stopColor="#1e40af" stopOpacity="0.5" />
-                </linearGradient>
-                <linearGradient id="strokeGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="#60a5fa" />
-                  <stop offset="100%" stopColor="#3b82f6" />
-                </linearGradient>
-              </defs>
-            </svg>
+            <motion.img
+              src="/src/Logo/logo-no-bg.png"
+              alt="TRUST-LOCK Logo"
+              className="relative z-10 w-40 h-40 drop-shadow-2xl"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5, duration: 1.5 }}
+            />
           </motion.div>
         </motion.div>
 
@@ -587,11 +856,11 @@ export const TransitionView = () => {
           <h1 className="text-6xl font-black text-foreground mb-6">
             Ready for Live Demo
           </h1>
-          <p className="text-3xl text-primary/90 mb-3">
+          <p className="text-3xl bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent font-semibold mb-3">
             Watch Trust-Lock block a real attack in real-time
           </p>
           <p className="text-xl text-muted-foreground">
-            Demonstrating: <span className="text-primary font-semibold">Impossible Travel Detection</span>
+            Demonstrating: <span className="text-accent font-semibold">Impossible Travel Detection</span>
           </p>
         </motion.div>
 
@@ -603,10 +872,29 @@ export const TransitionView = () => {
           className="flex items-center justify-center gap-3 text-muted-foreground"
         >
           <motion.div
-            animate={{ opacity: [0.5, 1, 0.5] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-            className="w-3 h-3 bg-primary rounded-full"
-          />
+            animate={{ 
+              rotate: 360,
+              scale: [1, 1.2, 1]
+            }}
+            transition={{ 
+              rotate: { duration: 2, repeat: Infinity, ease: "linear" },
+              scale: { duration: 1, repeat: Infinity }
+            }}
+            className="relative"
+          >
+            <div className="w-3 h-3 bg-accent rounded-full" />
+            <motion.div
+              className="absolute inset-0 bg-accent/30 rounded-full"
+              animate={{
+                scale: [1, 2, 1],
+                opacity: [0.5, 0, 0.5]
+              }}
+              transition={{
+                duration: 1.5,
+                repeat: Infinity
+              }}
+            />
+          </motion.div>
           <span className="text-lg">Initializing security gateway...</span>
         </motion.div>
       </div>
