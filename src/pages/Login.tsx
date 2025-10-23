@@ -199,7 +199,14 @@ export default function Login() {
         }} />
       </div>
 
-      <div className="w-full max-w-md space-y-6 relative z-10">
+      {/* Main Content - Conditional Layout */}
+      <div className={`w-full mx-auto relative z-10 px-4 transition-all duration-500 ${
+        decision 
+          ? 'max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-8 items-center' 
+          : 'max-w-2xl flex justify-center'
+      }`}>
+        {/* Login Form */}
+        <div className="w-full space-y-6">
         {/* Header with Logo */}
         <motion.div 
           className="text-center space-y-4"
@@ -315,18 +322,25 @@ export default function Login() {
             </CardContent>
           </Card>
         </motion.div>
+        </div>
 
-        {/* Decision Result */}
+        {/* Right Side - Decision Notification */}
         {decision && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: -10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 0.5, type: "spring", stiffness: 200 }}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
+            className="w-full"
           >
-            <div className={`relative overflow-hidden rounded-2xl border-2 ${getDecisionColor()} backdrop-blur-md shadow-2xl`}>
-              {/* Animated background gradient */}
+            <div className={`relative backdrop-blur-xl rounded-2xl border-2 overflow-hidden shadow-2xl ${
+              decision === 'GRANTED' ? 'border-success/30 bg-success/5' :
+              decision === 'CHALLENGE' ? 'border-warning/30 bg-warning/5' :
+              'border-destructive/30 bg-destructive/5'
+            }`}>
+              
+              {/* Animated Background */}
               <motion.div
-                className={`absolute inset-0 opacity-10 ${
+                className={`absolute inset-0 ${
                   decision === 'GRANTED' ? 'bg-gradient-to-br from-success to-success/50' :
                   decision === 'CHALLENGE' ? 'bg-gradient-to-br from-warning to-warning/50' :
                   'bg-gradient-to-br from-destructive to-destructive/50'
