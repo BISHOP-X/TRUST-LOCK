@@ -46,7 +46,7 @@ export const LandingView = () => {
               
               {/* Logo Image */}
               <motion.img
-                src="/src/Logo/logo-no-bg.png"
+                src="/logo-no-bg.png"
                 alt="TRUST-LOCK Logo"
                 className="relative z-10 w-48 h-48 md:w-64 md:h-64 drop-shadow-2xl"
                 initial={{ opacity: 0 }}

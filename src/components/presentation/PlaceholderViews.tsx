@@ -487,7 +487,7 @@ export const SolutionIntro = () => {
             />
             
             <motion.img
-              src="/src/Logo/logo-no-bg.png"
+              src="/logo-no-bg.png"
               alt="TRUST-LOCK Logo"
               className="relative z-10 w-40 h-40 drop-shadow-2xl"
               initial={{ opacity: 0 }}
@@ -837,7 +837,7 @@ export const TransitionView = () => {
             />
             
             <motion.img
-              src="/src/Logo/logo-no-bg.png"
+              src="/logo-no-bg.png"
               alt="TRUST-LOCK Logo"
               className="relative z-10 w-40 h-40 drop-shadow-2xl"
               initial={{ opacity: 0 }}

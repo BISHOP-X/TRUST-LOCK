@@ -72,7 +72,7 @@ export const NavigationBar = ({ activeTab, onTabChange }: NavigationBarProps) =>
               <div className="absolute inset-0 bg-accent/10 rounded-xl blur-lg" />
               <div className="relative bg-gradient-to-br from-primary/10 to-accent/10 backdrop-blur-sm p-2 rounded-xl border border-primary/20">
                 <img
-                  src="/src/Logo/logo-no-bg.png"
+                  src="/logo-no-bg.png"
                   alt="TRUSTLOCK Logo"
                   className="h-8 w-8"
                 />

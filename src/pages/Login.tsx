@@ -233,7 +233,7 @@ export default function Login() {
                 }}
               />
               <img
-                src="/src/Logo/logo-no-bg.png"
+                src="/logo-no-bg.png"
                 alt="TRUSTLOCK Logo"
                 className="relative z-10 w-24 h-24 drop-shadow-2xl"
               />
