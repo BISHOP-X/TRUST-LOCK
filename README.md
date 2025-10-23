@@ -15,7 +15,7 @@
 
 - **Live Application:** [https://trust-lock-iota.vercel.app](https://trust-lock-iota.vercel.app)
 - **Backend API:** Integrated via Supabase Edge Functions (Serverless)
-- **Recorded Demo:** _Coming soon - Live presentation during judging_
+- **Recorded Demo:** [Watch Full Demo Video](https://www.mediafire.com/file/gc90yutfv23yg3a/Screen+Recording+2025-10-23+092631.mp4/file)
 
 ---
 
