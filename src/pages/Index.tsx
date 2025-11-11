@@ -6,6 +6,7 @@ import { NavigationBar } from '@/components/dashboard/NavigationBar';
 import { RiskDetailsPanel } from '@/components/dashboard/RiskDetailsPanel';
 import { AuditLogView } from '@/components/dashboard/AuditLogView';
 import { SystemInfoView } from '@/components/dashboard/SystemInfoView';
+import { ThreatOverview } from '@/components/dashboard/ThreatOverview';
 import { RiskGauge } from '@/components/dashboard/RiskGauge';
 import { useDashboard } from '@/contexts/DashboardContext';
 import { Card } from '@/components/ui/card';
@@ -16,220 +17,300 @@ import { CheckCircle, AlertCircle, XCircle, Shield, Activity, TrendingUp, Lock }
 const DemoView = () => {
   const { decision, riskFactors, reason, riskScore } = useDashboard();
 
+  // Floating particles for background
+  const particles = Array.from({ length: 30 }, (_, i) => ({
+    id: i,
+    left: Math.random() * 100,
+    top: Math.random() * 100,
+    delay: Math.random() * 5,
+    duration: 3 + Math.random() * 2,
+  }));
+
   const getDecisionStyle = () => {
     switch (decision) {
       case 'GRANTED':
-        return 'bg-gradient-to-r from-success to-success/80 text-success-foreground shadow-lg';
+        return 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg';
       case 'CHALLENGE':
-        return 'bg-gradient-to-r from-warning to-warning/80 text-warning-foreground shadow-lg';
+        return 'bg-gradient-to-r from-yellow-500 to-yellow-600 text-white shadow-lg';
       case 'BLOCKED':
-        return 'bg-gradient-to-r from-destructive to-destructive/80 text-destructive-foreground shadow-lg';
+        return 'bg-gradient-to-r from-red-500 to-red-600 text-white shadow-lg';
     }
   };
 
   const getDecisionIcon = () => {
     switch (decision) {
       case 'GRANTED':
-        return <CheckCircle className="h-5 w-5" strokeWidth={2.5} />;
+        return <CheckCircle className="h-6 w-6" strokeWidth={2.5} />;
       case 'CHALLENGE':
-        return <AlertCircle className="h-5 w-5" strokeWidth={2.5} />;
+        return <AlertCircle className="h-6 w-6" strokeWidth={2.5} />;
       case 'BLOCKED':
-        return <XCircle className="h-5 w-5" strokeWidth={2.5} />;
+        return <XCircle className="h-6 w-6" strokeWidth={2.5} />;
     }
   };
 
   return (
-    <div className="container mx-auto px-6 py-8">
-      <div className="grid lg:grid-cols-3 gap-6 mb-8">
-        {/* Live Security Status */}
-        <Card className="lg:col-span-1 bg-card/50 backdrop-blur-md border-border/50 shadow-xl p-6 relative overflow-hidden">
-          {/* Decorative gradient */}
-          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary/10 to-accent/10 rounded-full blur-3xl" />
-          
-          <div className="relative">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="relative">
-                <div className="absolute inset-0 bg-primary/20 rounded-lg blur-md" />
-                <div className="relative bg-gradient-to-br from-primary to-accent p-2.5 rounded-lg">
-                  <Shield className="h-5 w-5 text-primary-foreground" strokeWidth={2} />
+    <div className="relative min-h-screen bg-gradient-to-br from-[#0B0F1C] via-[#050810] to-[#000000] overflow-hidden">
+      {/* Animated Grid Background */}
+      <div className="absolute inset-0 opacity-10">
+        <motion.div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `
+              linear-gradient(rgba(248, 197, 55, 0.3) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(248, 197, 55, 0.3) 1px, transparent 1px)
+            `,
+            backgroundSize: '60px 60px',
+          }}
+          animate={{
+            backgroundPosition: ['0px 0px', '60px 60px'],
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            ease: 'linear',
+          }}
+        />
+      </div>
+
+      {/* Data Packet Particles */}
+      {particles.map((particle) => (
+        <motion.div
+          key={particle.id}
+          className="absolute w-1 h-1 rounded-full bg-[#F8C537]"
+          style={{
+            left: `${particle.left}%`,
+            top: `${particle.top}%`,
+            boxShadow: '0 0 8px rgba(248, 197, 55, 0.6)',
+          }}
+          animate={{
+            y: [0, -100, 0],
+            x: [0, 30, 0],
+            opacity: [0, 0.6, 0],
+            scale: [0.5, 1, 0.5],
+          }}
+          transition={{
+            duration: particle.duration,
+            repeat: Infinity,
+            delay: particle.delay,
+            ease: 'easeInOut',
+          }}
+        />
+      ))}
+
+      {/* Network Connection Lines */}
+      <svg className="absolute inset-0 w-full h-full opacity-20" style={{ zIndex: 1 }}>
+        {[0, 1, 2, 3].map((i) => (
+          <motion.line
+            key={i}
+            x1={`${20 + i * 20}%`}
+            y1="0%"
+            x2={`${30 + i * 20}%`}
+            y2="100%"
+            stroke="url(#lineGradientDashboard)"
+            strokeWidth="1"
+            initial={{ pathLength: 0, opacity: 0 }}
+            animate={{
+              pathLength: [0, 1, 0],
+              opacity: [0, 0.5, 0],
+            }}
+            transition={{
+              duration: 3,
+              repeat: Infinity,
+              delay: i * 0.5,
+              ease: 'easeInOut',
+            }}
+          />
+        ))}
+        <defs>
+          <linearGradient id="lineGradientDashboard" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#F8C537" stopOpacity="0" />
+            <stop offset="50%" stopColor="#F8C537" stopOpacity="1" />
+            <stop offset="100%" stopColor="#F8C537" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+      </svg>
+
+      <div className="relative z-10 container mx-auto px-6 py-8">
+        <div className="grid lg:grid-cols-3 gap-6 mb-8">
+          {/* Risk Gauge - Center Focus */}
+          <Card className="lg:col-span-1 bg-black/40 backdrop-blur-md border-[#3B82F6]/30 shadow-xl p-6 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#3B82F6]/10 to-[#F8C537]/10 rounded-full blur-3xl" />
+            
+            <div className="relative">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2.5 rounded-lg border border-[#3B82F6]/30">
+                  <Shield className="h-5 w-5 text-[#3B82F6]" strokeWidth={2} />
                 </div>
+                <h2 className="text-xl font-bold text-white">Risk Assessment</h2>
               </div>
-              <h2 className="text-xl font-bold text-foreground">Live Security Status</h2>
-            </div>
 
-            <div className="flex flex-col items-center justify-center mb-6">
-              <RiskGauge />
-              
-              <AnimatePresence mode="wait">
-                {decision && (
-                  <motion.div
-                    key={decision}
-                    initial={{ scale: 0.8, opacity: 0, y: 10 }}
-                    animate={{ scale: 1, opacity: 1, y: 0 }}
-                    exit={{ scale: 0.8, opacity: 0, y: -10 }}
-                    transition={{ duration: 0.4, type: "spring", stiffness: 200 }}
-                    className="mt-6"
-                  >
-                    <Badge className={`text-base px-6 py-3 ${getDecisionStyle()} font-semibold`}>
-                      <span className="mr-2">{getDecisionIcon()}</span>
-                      ACCESS {decision}
-                    </Badge>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-
-            {riskFactors.length > 0 && (
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 mb-3">
-                  <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                  <h3 className="text-sm font-semibold text-muted-foreground">Risk Factors</h3>
-                </div>
-                {riskFactors.map((factor, index) => (
-                  <motion.div
-                    key={`${factor.name}-${index}`}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="bg-card/60 backdrop-blur-sm rounded-lg p-3 border border-border/50 hover:border-primary/30 transition-colors"
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-foreground">{factor.label}</span>
-                      <Badge variant="outline" className="text-xs font-semibold">
-                        +{factor.points}
-                      </Badge>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            )}
-          </div>
-        </Card>
-
-        {/* Real-Time Analysis Panel */}
-        <Card className="lg:col-span-2 bg-card/50 backdrop-blur-md border-border/50 shadow-xl p-6 relative overflow-hidden">
-          {/* Decorative gradient */}
-          <div className="absolute bottom-0 left-0 w-40 h-40 bg-gradient-to-tr from-accent/10 to-primary/10 rounded-full blur-3xl" />
-          
-          <div className="relative">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="relative">
-                <div className="absolute inset-0 bg-accent/20 rounded-lg blur-md" />
-                <div className="relative bg-gradient-to-br from-accent to-accent/80 p-2.5 rounded-lg">
-                  <Activity className="h-5 w-5 text-primary-foreground" strokeWidth={2} />
-                </div>
-              </div>
-              <h2 className="text-xl font-bold text-foreground">Real-Time Analysis</h2>
-            </div>
-
-            {/* Waiting State */}
-            {!decision && (
-              <div className="flex flex-col items-center justify-center py-12 text-center">
-                <motion.div
-                  className="relative mb-6"
-                  animate={{ 
-                    scale: [1, 1.1, 1],
-                    opacity: [0.3, 0.6, 0.3]
-                  }}
-                  transition={{ 
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                >
-                  <div className="absolute inset-0 bg-primary/20 rounded-full blur-2xl" />
-                  <Shield className="relative h-20 w-20 text-primary/60" strokeWidth={1.5} />
-                </motion.div>
-                <h3 className="text-lg font-semibold text-foreground mb-2">
-                  Awaiting Login Attempt
-                </h3>
-                <p className="text-sm text-muted-foreground max-w-md leading-relaxed">
-                  Dashboard will update in real-time when an employee attempts to log in.
-                  All security pillars will be analyzed instantly.
-                </p>
-              </div>
-            )}
-
-            {/* Active Analysis */}
-            {decision && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className="space-y-4"
-              >
-                {/* Risk Score Display */}
-                <div className="bg-card/60 backdrop-blur-sm rounded-xl p-5 border border-border/50">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <Lock className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm font-semibold text-muted-foreground">Calculated Risk Score</span>
-                    </div>
-                    <Badge 
-                      variant={riskScore > 60 ? 'destructive' : riskScore > 30 ? 'default' : 'outline'}
-                      className="text-sm font-bold px-3 py-1"
+              <div className="flex flex-col items-center justify-center mb-6">
+                <RiskGauge />
+                
+                <AnimatePresence mode="wait">
+                  {decision && (
+                    <motion.div
+                      key={decision}
+                      initial={{ scale: 0.8, opacity: 0, y: 10 }}
+                      animate={{ scale: 1, opacity: 1, y: 0 }}
+                      exit={{ scale: 0.8, opacity: 0, y: -10 }}
+                      transition={{ duration: 0.4, type: "spring", stiffness: 200 }}
+                      className="mt-6"
                     >
-                      {riskScore}/100
-                    </Badge>
+                      <Badge className={`text-base px-6 py-3 ${getDecisionStyle()} font-semibold`}>
+                        <span className="mr-2">{getDecisionIcon()}</span>
+                        ACCESS {decision}
+                      </Badge>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Risk Score Bar */}
+              {decision && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="space-y-2"
+                >
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-400">Risk Score</span>
+                    <span className="text-white font-bold">{riskScore}/100</span>
                   </div>
-                  <div className="w-full bg-muted/50 rounded-full h-3 overflow-hidden">
+                  <div className="w-full bg-gray-800 rounded-full h-2 overflow-hidden">
                     <motion.div
                       initial={{ width: 0 }}
                       animate={{ width: `${riskScore}%` }}
-                      transition={{ duration: 1.2, ease: "easeOut" }}
-                      className={`h-3 rounded-full ${
-                        riskScore > 60 ? 'bg-gradient-to-r from-destructive to-destructive/80' : 
-                        riskScore > 30 ? 'bg-gradient-to-r from-warning to-warning/80' : 
-                        'bg-gradient-to-r from-success to-success/80'
+                      transition={{ duration: 1, ease: "easeOut" }}
+                      className={`h-2 rounded-full ${
+                        riskScore > 60 ? 'bg-gradient-to-r from-red-500 to-red-600' : 
+                        riskScore > 30 ? 'bg-gradient-to-r from-yellow-500 to-yellow-600' : 
+                        'bg-gradient-to-r from-green-500 to-green-600'
                       }`}
                     />
                   </div>
-                </div>
+                </motion.div>
+              )}
+            </div>
+          </Card>
 
-                {/* AI Analysis */}
-                {reason && (
-                  <div className="bg-card/60 backdrop-blur-sm rounded-xl p-5 border border-border/50">
-                    <h4 className="text-sm font-semibold text-muted-foreground mb-3 flex items-center gap-2">
-                      <Activity className="h-4 w-4" />
-                      AI Analysis
-                    </h4>
-                    <p className="text-sm text-foreground leading-relaxed">{reason}</p>
+          {/* Three Pillars Analysis */}
+          <Card className="lg:col-span-2 bg-black/40 backdrop-blur-md border-[#3B82F6]/30 shadow-xl p-6 relative overflow-hidden">
+            <div className="absolute bottom-0 left-0 w-40 h-40 bg-gradient-to-tr from-[#F8C537]/10 to-[#3B82F6]/10 rounded-full blur-3xl" />
+            
+            <div className="relative">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2.5 rounded-lg border border-[#F8C537]/30">
+                  <Activity className="h-5 w-5 text-[#F8C537]" strokeWidth={2} />
+                </div>
+                <h2 className="text-xl font-bold text-white">Security Analysis</h2>
+              </div>
+
+              {/* Waiting State */}
+              {!decision && (
+                <div className="flex flex-col items-center justify-center py-12 text-center">
+                  <motion.div
+                    className="relative mb-6"
+                    animate={{ 
+                      scale: [1, 1.1, 1],
+                      opacity: [0.3, 0.6, 0.3]
+                    }}
+                    transition={{ 
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                  >
+                    <div className="absolute inset-0 bg-[#3B82F6]/20 rounded-full blur-2xl" />
+                    <Shield className="relative h-20 w-20 text-[#3B82F6]/60" strokeWidth={1.5} />
+                  </motion.div>
+                  <h3 className="text-lg font-semibold text-white mb-2">
+                    Awaiting Login Attempt
+                  </h3>
+                  <p className="text-sm text-gray-400 max-w-md leading-relaxed">
+                    Security gateway is active. All three pillars will analyze the next authentication attempt in real-time.
+                  </p>
+                </div>
+              )}
+
+              {/* Active Analysis - Three Pillars */}
+              {decision && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                  className="space-y-4"
+                >
+                  {/* Three Pillars Grid */}
+                  <div className="grid grid-cols-3 gap-4">
+                    {[
+                      { icon: Lock, label: 'Identity', color: '#3B82F6' },
+                      { icon: Shield, label: 'Device', color: '#F8C537' },
+                      { icon: TrendingUp, label: 'Location', color: '#3B82F6' },
+                    ].map((pillar, index) => {
+                      const PillarIcon = pillar.icon;
+                      const pillarFactor = riskFactors[index];
+                      
+                      return (
+                        <motion.div
+                          key={pillar.label}
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ delay: 0.1 * index, type: "spring" }}
+                          className="bg-black/60 backdrop-blur-sm rounded-xl p-4 border border-white/10 hover:border-white/20 transition-colors"
+                        >
+                          <div className="flex items-center gap-3 mb-3">
+                            <div 
+                              className="w-10 h-10 rounded-lg flex items-center justify-center border"
+                              style={{ 
+                                borderColor: `${pillar.color}40`
+                              }}
+                            >
+                              <PillarIcon className="w-5 h-5" style={{ color: pillar.color }} />
+                            </div>
+                            <div>
+                              <div className="text-xs text-gray-400">{pillar.label}</div>
+                              <div className="text-sm font-semibold text-white">
+                                {pillarFactor?.label || 'Analyzing...'}
+                              </div>
+                            </div>
+                          </div>
+                          {pillarFactor && (
+                            <Badge 
+                              variant="outline" 
+                              className="text-xs w-full justify-center"
+                              style={{
+                                borderColor: pillar.color,
+                                color: pillar.color
+                              }}
+                            >
+                              +{pillarFactor.points} risk
+                            </Badge>
+                          )}
+                        </motion.div>
+                      );
+                    })}
                   </div>
-                )}
 
-                {/* Security Pillars Status */}
-                <div className="grid grid-cols-2 gap-3">
-                  {riskFactors.slice(0, 4).map((factor, index) => (
-                    <motion.div
-                      key={`pillar-${index}`}
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.1 * index, type: "spring" }}
-                      className={`p-4 rounded-xl border backdrop-blur-sm ${
-                        factor.status === 'success' 
-                          ? 'bg-success/5 border-success/30' 
-                          : factor.status === 'warning'
-                          ? 'bg-warning/5 border-warning/30'
-                          : 'bg-destructive/5 border-destructive/30'
-                      }`}
-                    >
-                      <div className="text-xs font-semibold text-muted-foreground mb-1.5">
-                        {factor.name}
-                      </div>
-                      <div className="text-sm font-medium text-foreground">
-                        {factor.label}
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              </motion.div>
-            )}
-          </div>
-        </Card>
+                  {/* AI Analysis */}
+                  {reason && (
+                    <div className="bg-gradient-to-br from-[#3B82F6]/10 to-[#F8C537]/10 backdrop-blur-sm rounded-xl p-5 border border-white/10">
+                      <h4 className="text-sm font-semibold text-gray-300 mb-3 flex items-center gap-2">
+                        <Activity className="h-4 w-4 text-[#F8C537]" />
+                        AI Security Assessment
+                      </h4>
+                      <p className="text-sm text-white leading-relaxed">{reason}</p>
+                    </div>
+                  )}
+                </motion.div>
+              )}
+            </div>
+          </Card>
+        </div>
+        
+        {/* Risk Details Panel */}
+        <RiskDetailsPanel />
       </div>
-      
-      {/* Risk Details */}
-      <RiskDetailsPanel />
     </div>
   );
 };
@@ -245,8 +326,8 @@ const Index = () => {
             <NavigationBar activeTab={activeTab} onTabChange={setActiveTab} />
             
             {activeTab === 'demo' && <DemoView />}
+            {activeTab === 'threat' && <ThreatOverview />}
             {activeTab === 'audit' && <AuditLogView />}
-            {activeTab === 'info' && <SystemInfoView />}
           </div>
         </PresentationWrapper>
       </DashboardProvider>

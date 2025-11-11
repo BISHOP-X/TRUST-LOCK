@@ -14,8 +14,8 @@ export { ProgressIndicator } from './ProgressIndicator';
 
 // View Components
 export { LandingView } from './LandingView';
+export { ProblemView } from './ProblemView';
 export { 
-  ProblemView, 
   QuestionView, 
   SolutionIntro, 
   PillarsView, 

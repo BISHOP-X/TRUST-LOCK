@@ -2,10 +2,9 @@ import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Shield, Loader2, CheckCircle, AlertTriangle, XCircle, Lock, User } from 'lucide-react';
+import { Shield, Loader2, CheckCircle, AlertTriangle, XCircle, Lock, User, Mail, Phone } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 type DecisionType = 'GRANTED' | 'CHALLENGE' | 'BLOCKED' | null;
 
@@ -125,26 +124,11 @@ export default function Login() {
   const getDecisionIcon = () => {
     switch (decision) {
       case 'GRANTED':
-        return (
-          <div className="relative">
-            <div className="absolute inset-0 bg-success/20 rounded-full blur-lg" />
-            <CheckCircle className="relative h-10 w-10 text-success" strokeWidth={2} />
-          </div>
-        );
+        return <CheckCircle className="h-12 w-12 text-green-500" strokeWidth={2.5} />;
       case 'CHALLENGE':
-        return (
-          <div className="relative">
-            <div className="absolute inset-0 bg-warning/20 rounded-full blur-lg" />
-            <AlertTriangle className="relative h-10 w-10 text-warning" strokeWidth={2} />
-          </div>
-        );
+        return <AlertTriangle className="h-12 w-12 text-yellow-500" strokeWidth={2.5} />;
       case 'BLOCKED':
-        return (
-          <div className="relative">
-            <div className="absolute inset-0 bg-destructive/20 rounded-full blur-lg" />
-            <XCircle className="relative h-10 w-10 text-destructive" strokeWidth={2} />
-          </div>
-        );
+        return <XCircle className="h-12 w-12 text-red-500" strokeWidth={2.5} />;
       default:
         return null;
     }
@@ -153,291 +137,302 @@ export default function Login() {
   const getDecisionColor = () => {
     switch (decision) {
       case 'GRANTED':
-        return 'border-success/50 bg-success/5';
+        return 'border-green-500/30 bg-green-500/5';
       case 'CHALLENGE':
-        return 'border-warning/50 bg-warning/5';
+        return 'border-yellow-500/30 bg-yellow-500/5';
       case 'BLOCKED':
-        return 'border-destructive/50 bg-destructive/5';
+        return 'border-red-500/30 bg-red-500/5';
       default:
         return '';
     }
   };
 
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 p-4 relative overflow-hidden">
-      {/* Decorative background orbs */}
-      <motion.div
-        className="absolute top-20 right-20 w-96 h-96 bg-accent/5 rounded-full blur-3xl"
-        animate={{
-          scale: [1, 1.2, 1],
-          opacity: [0.3, 0.5, 0.3]
-        }}
-        transition={{
-          duration: 8,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-      />
-      <motion.div
-        className="absolute bottom-20 left-20 w-80 h-80 bg-primary/5 rounded-full blur-3xl"
-        animate={{
-          scale: [1, 1.3, 1],
-          opacity: [0.2, 0.4, 0.2]
-        }}
-        transition={{
-          duration: 10,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-      />
+  const isImpossibleTravel = () => {
+    return decision === 'BLOCKED' && 
+           (message.toLowerCase().includes('impossible travel') || 
+            message.toLowerCase().includes('lagos'));
+  };
 
-      {/* Subtle background grid */}
-      <div className="absolute inset-0 opacity-[0.02]">
-        <div className="absolute inset-0" style={{
-          backgroundImage: 'linear-gradient(hsl(220 90% 56% / 0.5) 1px, transparent 1px), linear-gradient(90deg, hsl(220 90% 56% / 0.5) 1px, transparent 1px)',
-          backgroundSize: '80px 80px'
-        }} />
+  const shouldShowAdminContact = () => {
+    return decision === 'BLOCKED' || decision === 'CHALLENGE';
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-[#0B0F1C] via-[#050810] to-[#000000] relative overflow-hidden">
+      {/* Animated Grid Background */}
+      <div className="absolute inset-0 opacity-10">
+        <motion.div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `
+              linear-gradient(rgba(248, 197, 55, 0.3) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(248, 197, 55, 0.3) 1px, transparent 1px)
+            `,
+            backgroundSize: '60px 60px',
+          }}
+          animate={{
+            backgroundPosition: ['0px 0px', '60px 60px'],
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            ease: 'linear',
+          }}
+        />
       </div>
 
-      {/* Main Content - Conditional Layout */}
-      <div className={`w-full mx-auto relative z-10 px-4 transition-all duration-500 ${
-        decision 
-          ? 'max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-8 items-center' 
-          : 'max-w-2xl flex justify-center'
-      }`}>
-        {/* Login Form */}
-        <div className="w-full space-y-6">
+      {/* Data Packet Particles */}
+      {Array.from({ length: 30 }, (_, i) => ({
+        id: i,
+        left: Math.random() * 100,
+        top: Math.random() * 100,
+        delay: Math.random() * 5,
+        duration: 3 + Math.random() * 2,
+      })).map((particle) => (
+        <motion.div
+          key={particle.id}
+          className="absolute w-1 h-1 rounded-full bg-[#F8C537]"
+          style={{
+            left: `${particle.left}%`,
+            top: `${particle.top}%`,
+            boxShadow: '0 0 8px rgba(248, 197, 55, 0.6)',
+          }}
+          animate={{
+            y: [0, -100, 0],
+            x: [0, 30, 0],
+            opacity: [0, 0.6, 0],
+            scale: [0.5, 1, 0.5],
+          }}
+          transition={{
+            duration: particle.duration,
+            repeat: Infinity,
+            delay: particle.delay,
+            ease: 'easeInOut',
+          }}
+        />
+      ))}
+
+      {/* Network Connection Lines */}
+      <svg className="absolute inset-0 w-full h-full opacity-20" style={{ zIndex: 1 }}>
+        {[0, 1, 2, 3].map((i) => (
+          <motion.line
+            key={i}
+            x1={`${20 + i * 20}%`}
+            y1="0%"
+            x2={`${30 + i * 20}%`}
+            y2="100%"
+            stroke="url(#lineGradientLogin)"
+            strokeWidth="1"
+            initial={{ pathLength: 0, opacity: 0 }}
+            animate={{
+              pathLength: [0, 1, 0],
+              opacity: [0, 0.5, 0],
+            }}
+            transition={{
+              duration: 3,
+              repeat: Infinity,
+              delay: i * 0.5,
+              ease: 'easeInOut',
+            }}
+          />
+        ))}
+        <defs>
+          <linearGradient id="lineGradientLogin" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#F8C537" stopOpacity="0" />
+            <stop offset="50%" stopColor="#F8C537" stopOpacity="1" />
+            <stop offset="100%" stopColor="#F8C537" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+      </svg>
+
+      <div className="relative z-10 container mx-auto px-6 py-12 min-h-screen flex flex-col items-center justify-center">
         {/* Header with Logo */}
         <motion.div 
-          className="text-center space-y-4"
+          className="text-center space-y-3 mb-8"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <div className="flex justify-center mb-4">
-            <motion.div
-              className="relative"
-              animate={{ 
-                scale: [1, 1.05, 1]
-              }}
-              transition={{ 
-                duration: 4, 
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-            >
-              <motion.div
-                className="absolute inset-0 blur-2xl rounded-full"
-                style={{ background: 'hsl(45 100% 51% / 0.15)' }}
-                animate={{ 
-                  scale: [1, 1.3, 1],
-                  opacity: [0.3, 0.6, 0.3]
-                }}
-                transition={{ 
-                  duration: 3, 
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-              />
-              <img
-                src="/logo-no-bg.png"
-                alt="TRUSTLOCK Logo"
-                className="relative z-10 w-24 h-24 drop-shadow-2xl"
-              />
-            </motion.div>
-          </div>
-          <h1 className="text-4xl font-black bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-            TRUSTLOCK
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-[#F8C537] to-[#3B82F6] bg-clip-text text-transparent">
+            TRUST-LOCK
           </h1>
-          <p className="text-muted-foreground font-medium">Zero Trust Security Gateway</p>
+          <p className="text-gray-400 font-medium">Zero Trust Security Gateway</p>
         </motion.div>
 
-        {/* Login Form */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-        >
-          <Card className="border-border/50 bg-card/40 backdrop-blur-md shadow-xl">
-            <CardHeader className="space-y-1 pb-4">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-primary/20 rounded-lg blur-md" />
-                  <User className="relative h-6 w-6 text-primary" strokeWidth={2} />
-                </div>
-                <CardTitle className="text-2xl text-foreground">Employee Login</CardTitle>
-              </div>
-              <CardDescription className="text-muted-foreground">
-                Enter your credentials to access the system
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleLogin} className="space-y-5">
-                <div className="space-y-3">
-                  <Label htmlFor="account" className="text-foreground font-medium flex items-center gap-2">
-                    <Lock className="h-4 w-4 text-accent" />
-                    Select Demo Account
-                  </Label>
-                  <Select value={selectedEmail} onValueChange={setSelectedEmail}>
-                    <SelectTrigger className="bg-background/60 border-border/50 text-foreground hover:border-primary/50 transition-colors">
-                      <SelectValue placeholder="Choose a scenario..." />
-                    </SelectTrigger>
-                    <SelectContent className="bg-card border-border/50">
-                      {DEMO_ACCOUNTS.map((account) => (
-                        <SelectItem key={account.email} value={account.email}>
-                          <div className="flex flex-col py-1">
-                            <span className="font-semibold text-foreground">{account.scenario}</span>
-                            <span className="text-xs text-muted-foreground">{account.name}</span>
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <div className="flex items-center gap-2 bg-accent/5 border border-accent/20 rounded-lg px-3 py-2">
-                    <Shield className="h-4 w-4 text-accent flex-shrink-0" />
-                    <p className="text-xs text-muted-foreground">
-                      Password is automatically set to: <code className="bg-background/60 px-2 py-0.5 rounded text-accent font-mono">demo</code>
-                    </p>
+        {/* Two Column Layout */}
+        <div className="w-full max-w-6xl">
+          <div className={`grid gap-6 transition-all duration-500 ${decision ? 'lg:grid-cols-2' : 'lg:grid-cols-1 max-w-md mx-auto'}`}>
+            {/* Login Form - Left Side */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+              className={decision ? '' : 'w-full'}
+            >
+              <Card className="bg-black/40 backdrop-blur-md border-[#3B82F6]/30 shadow-xl">
+                <CardHeader className="space-y-1 pb-4">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="p-2 rounded-lg border border-[#3B82F6]/30">
+                      <User className="h-5 w-5 text-[#3B82F6]" strokeWidth={2} />
+                    </div>
+                    <CardTitle className="text-2xl text-white">Employee Login</CardTitle>
                   </div>
-                </div>
-
-                <Button
-                  type="submit"
-                  className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-opacity text-primary-foreground font-semibold py-6 text-base shadow-lg"
-                  disabled={loading || !selectedEmail}
-                >
-                  {loading ? (
-                    <>
-                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                      Verifying Security...
-                    </>
-                  ) : (
-                    <>
-                      <Lock className="mr-2 h-5 w-5" />
-                      Secure Login
-                    </>
-                  )}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
-        </motion.div>
-        </div>
-
-        {/* Right Side - Decision Notification */}
-        {decision && (
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
-            className="w-full"
-          >
-            <div className={`relative backdrop-blur-xl rounded-2xl border-2 overflow-hidden shadow-2xl ${
-              decision === 'GRANTED' ? 'border-success/30 bg-success/5' :
-              decision === 'CHALLENGE' ? 'border-warning/30 bg-warning/5' :
-              'border-destructive/30 bg-destructive/5'
-            }`}>
-              
-              {/* Animated Background */}
-              <motion.div
-                className={`absolute inset-0 ${
-                  decision === 'GRANTED' ? 'bg-gradient-to-br from-success to-success/50' :
-                  decision === 'CHALLENGE' ? 'bg-gradient-to-br from-warning to-warning/50' :
-                  'bg-gradient-to-br from-destructive to-destructive/50'
-                }`}
-                animate={{
-                  scale: [1, 1.2, 1],
-                  opacity: [0.05, 0.15, 0.05]
-                }}
-                transition={{
-                  duration: 3,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-              />
-
-              <div className="relative p-6">
-                <div className="flex items-start gap-5">
-                  <motion.div
-                    initial={{ scale: 0, rotate: -180 }}
-                    animate={{ scale: 1, rotate: 0 }}
-                    transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-                  >
-                    {getDecisionIcon()}
-                  </motion.div>
-                  
-                  <div className="flex-1 space-y-2">
-                    <motion.h3 
-                      className={`font-bold text-xl flex items-center gap-2 ${
-                        decision === 'GRANTED' ? 'text-success' :
-                        decision === 'CHALLENGE' ? 'text-warning' :
-                        'text-destructive'
-                      }`}
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.3 }}
-                    >
-                      {decision === 'GRANTED' && (
-                        <>
-                          <span>Access Granted</span>
-                          <motion.div
-                            animate={{ scale: [1, 1.2, 1] }}
-                            transition={{ duration: 1, repeat: Infinity }}
-                          >
-                            ✓
-                          </motion.div>
-                        </>
-                      )}
-                      {decision === 'CHALLENGE' && 'Additional Verification Required'}
-                      {decision === 'BLOCKED' && (
-                        <>
-                          <span>Access Blocked</span>
-                          <Shield className="h-5 w-5" />
-                        </>
-                      )}
-                    </motion.h3>
-                    
-                    <motion.div
-                      className={`text-sm leading-relaxed ${
-                        decision === 'GRANTED' ? 'text-success/90' :
-                        decision === 'CHALLENGE' ? 'text-warning/90' :
-                        'text-destructive/90'
-                      }`}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: 0.4 }}
-                    >
-                      {message}
-                    </motion.div>
-
-                    {/* Additional info bar */}
-                    <motion.div
-                      className={`pt-3 mt-3 border-t ${
-                        decision === 'GRANTED' ? 'border-success/20' :
-                        decision === 'CHALLENGE' ? 'border-warning/20' :
-                        'border-destructive/20'
-                      }`}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: 0.5 }}
-                    >
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="text-muted-foreground font-medium">Security Status</span>
-                        <span className={`font-semibold px-2 py-1 rounded-full ${
-                          decision === 'GRANTED' ? 'bg-success/10 text-success' :
-                          decision === 'CHALLENGE' ? 'bg-warning/10 text-warning' :
-                          'bg-destructive/10 text-destructive'
-                        }`}>
-                          {decision}
-                        </span>
+                  <CardDescription className="text-gray-400">
+                    Select a demo account to test security scenarios
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <form onSubmit={handleLogin} className="space-y-5">
+                    <div className="space-y-3">
+                      <Label htmlFor="account" className="text-white font-medium flex items-center gap-2">
+                        <Lock className="h-4 w-4 text-[#F8C537]" />
+                        Demo Account
+                      </Label>
+                      <Select value={selectedEmail} onValueChange={setSelectedEmail}>
+                        <SelectTrigger className="bg-black/60 border-white/10 text-white hover:border-[#3B82F6]/50 transition-colors">
+                          <SelectValue placeholder="Choose a scenario..." />
+                        </SelectTrigger>
+                        <SelectContent className="bg-black/95 border-white/10 backdrop-blur-xl">
+                          {DEMO_ACCOUNTS.map((account) => (
+                            <SelectItem key={account.email} value={account.email} className="text-white hover:bg-white/10">
+                              <div className="flex flex-col py-1">
+                                <span className="font-semibold text-white">{account.scenario}</span>
+                                <span className="text-xs text-gray-400">{account.name}</span>
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <div className="flex items-center gap-2 bg-[#F8C537]/5 border border-[#F8C537]/20 rounded-lg px-3 py-2">
+                        <Shield className="h-4 w-4 text-[#F8C537] flex-shrink-0" />
+                        <p className="text-xs text-gray-400">
+                          Password: <code className="bg-black/60 px-2 py-0.5 rounded text-[#F8C537] font-mono">demo</code>
+                        </p>
                       </div>
-                    </motion.div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        )}
+                    </div>
+
+                    <Button
+                      type="submit"
+                      className="w-full bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 text-white font-semibold py-6 text-base transition-all"
+                      disabled={loading || !selectedEmail}
+                    >
+                      {loading ? (
+                        <>
+                          <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                          Verifying...
+                        </>
+                      ) : (
+                        <>
+                          <Lock className="mr-2 h-5 w-5" />
+                          Login
+                        </>
+                      )}
+                    </Button>
+                  </form>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            {/* Decision Result - Right Side */}
+            <AnimatePresence mode="wait">
+              {decision && (
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  transition={{ duration: 0.5, type: "spring", stiffness: 200 }}
+                >
+                  <Card className={`bg-black/40 backdrop-blur-md border-2 ${getDecisionColor()} shadow-xl h-full`}>
+                    <CardContent className="p-6 flex flex-col h-full">
+                      <div className="flex items-start gap-4 mb-4">
+                        <motion.div
+                          initial={{ scale: 0, rotate: -180 }}
+                          animate={{ scale: 1, rotate: 0 }}
+                          transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                        >
+                          {getDecisionIcon()}
+                        </motion.div>
+                        
+                        <div className="flex-1 space-y-3">
+                          <motion.h3 
+                            className={`font-bold text-2xl ${
+                              decision === 'GRANTED' ? 'text-green-500' :
+                              decision === 'CHALLENGE' ? 'text-yellow-500' :
+                              'text-red-500'
+                            }`}
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.3 }}
+                          >
+                            {decision === 'GRANTED' && 'Access Granted'}
+                            {decision === 'CHALLENGE' && 'Additional Verification'}
+                            {decision === 'BLOCKED' && 'Access Blocked'}
+                          </motion.h3>
+                          
+                          <motion.div
+                            className="text-sm text-white leading-relaxed"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.4 }}
+                          >
+                            {message}
+                          </motion.div>
+
+                          {/* Contact Administrator for Blocked/Challenge */}
+                          {shouldShowAdminContact() && (
+                            <motion.div
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: 0.6 }}
+                              className={`mt-4 pt-4 border-t ${
+                                decision === 'BLOCKED' ? 'border-red-500/20' : 'border-yellow-500/20'
+                              }`}
+                            >
+                              <p className={`text-xs font-semibold mb-2 ${
+                                decision === 'BLOCKED' ? 'text-red-400' : 'text-yellow-400'
+                              }`}>
+                                Contact Administrator:
+                              </p>
+                              <div className="space-y-1">
+                                <div className="flex items-center gap-2 text-xs text-gray-300">
+                                  <Mail className="h-3 w-3 text-[#F8C537]" />
+                                  <span>admin@trustlock.com</span>
+                                </div>
+                                <div className="flex items-center gap-2 text-xs text-gray-300">
+                                  <Phone className="h-3 w-3 text-[#F8C537]" />
+                                  <span>+234 800 123 4567</span>
+                                </div>
+                              </div>
+                            </motion.div>
+                          )}
+
+                          {/* Status Badge */}
+                          <motion.div
+                            className="pt-3 mt-3 border-t border-white/10"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.5 }}
+                          >
+                            <div className="flex items-center justify-between text-xs">
+                              <span className="text-gray-400 font-medium">Security Status</span>
+                              <span className={`font-semibold px-3 py-1 rounded-full ${
+                                decision === 'GRANTED' ? 'bg-green-500/20 text-green-500' :
+                                decision === 'CHALLENGE' ? 'bg-yellow-500/20 text-yellow-500' :
+                                'bg-red-500/20 text-red-500'
+                              }`}>
+                                {decision}
+                              </span>
+                            </div>
+                          </motion.div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
       </div>
     </div>
   );

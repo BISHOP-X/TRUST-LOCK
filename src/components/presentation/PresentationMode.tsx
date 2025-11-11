@@ -17,12 +17,15 @@ import { usePresentationKeyboard } from '@/hooks/usePresentationMode';
 
 // Import presentation views
 import { LandingView } from './LandingView';
+import { ProblemView } from './ProblemView';
+import { Pillar1View } from './Pillar1View';
 import { 
-  ProblemView, 
   QuestionView, 
   SolutionIntro, 
   PillarsView, 
-  TransitionView 
+  TransitionView,
+  Pillar2View,
+  Pillar3View
 } from './PlaceholderViews';
 
 // Import progress indicator
@@ -68,15 +71,15 @@ export const PresentationMode = () => {
         )}
         
         {currentStep === 'pillar-1' && (
-          <PillarsView key="pillar-1" pillarIndex={1} />
+          <Pillar1View key="pillar-1" />
         )}
         
         {currentStep === 'pillar-2' && (
-          <PillarsView key="pillar-2" pillarIndex={2} />
+          <Pillar2View key="pillar-2" />
         )}
         
         {currentStep === 'pillar-3' && (
-          <PillarsView key="pillar-3" pillarIndex={3} />
+          <Pillar3View key="pillar-3" />
         )}
         
         {currentStep === 'transition' && (
@@ -87,8 +90,8 @@ export const PresentationMode = () => {
         {currentStep === 'demo' && null}
       </AnimatePresence>
 
-      {/* Progress indicator (always visible during presentation) */}
-      {currentStep !== 'demo' && <ProgressIndicator />}
+      {/* Progress indicator (hidden on demo and pillar views) */}
+      {currentStep !== 'demo' && currentStep !== 'pillar-1' && currentStep !== 'pillar-2' && currentStep !== 'pillar-3' && <ProgressIndicator />}
 
       {/* Keyboard hints overlay (optional) */}
       {/* <KeyboardHints /> */}
