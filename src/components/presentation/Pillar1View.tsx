@@ -34,22 +34,22 @@ export const Pillar1View = () => {
 
   // Status items for left column
   const statusItems = [
-    { text: 'Device Trusted', icon: CheckCircle, delay: 1 },
-    { text: 'User Pattern Matched', icon: CheckCircle, delay: 2 },
-    { text: 'Biometric Verified', icon: CheckCircle, delay: 3 },
-    { text: 'Continuous Monitoring ACTIVE', icon: Activity, delay: 4 },
+    { text: '1st - Login Request Received', icon: User, delay: 0.2, stage: 1 },
+    { text: '2nd - Credentials Validated', icon: CheckCircle, delay: 0.4, stage: 2 },
+    { text: '3rd - Account Status Verified', icon: Shield, delay: 0.6, stage: 3 },
+    { text: '4th - Identity Clearance Granted', icon: Activity, delay: 0.8, stage: 4 },
   ];
 
   // Animation sequence
   useEffect(() => {
     const stages = [
-      { delay: 500, stage: 1 },   // Start animation
-      { delay: 1500, stage: 2 },  // Node 1
-      { delay: 2500, stage: 3 },  // Node 2
-      { delay: 3500, stage: 4 },  // Node 3
-      { delay: 4500, stage: 5 },  // Node 4
-      { delay: 5500, stage: 6 },  // Node 5
-      { delay: 6500, stage: 7 },  // Complete
+      { delay: 500, stage: 1 },   // Status item 1
+      { delay: 1000, stage: 2 },  // Status item 2
+      { delay: 1500, stage: 3 },  // Status item 3
+      { delay: 2000, stage: 4 },  // Status item 4
+      { delay: 2500, stage: 5 },  // Network animation starts
+      { delay: 3500, stage: 6 },  // Continue
+      { delay: 4500, stage: 7 },  // Complete
     ];
 
     const timers = stages.map(({ delay, stage }) =>
@@ -180,7 +180,7 @@ export const Pillar1View = () => {
               {/* Status Items */}
               <div className="space-y-4">
                 {statusItems.map((item, index) => {
-                  const isActive = verificationStage >= item.delay + 6;
+                  const isActive = verificationStage >= item.stage;
                   const ItemIcon = item.icon;
                   const isMonitoring = index === 3;
                   
@@ -362,7 +362,7 @@ export const Pillar1View = () => {
           transition={{ delay: 1.5 }}
         >
           <p className="text-sm text-gray-400">
-            Continuous authentication and user behavior analysis
+            Verifying user credentials and account status
           </p>
         </motion.div>
       </div>

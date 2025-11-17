@@ -16,6 +16,8 @@ export const Pillar3View = () => {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [isChecking, setIsChecking] = useState(true);
   const [showResult, setShowResult] = useState(false);
+  const [analysisStage, setAnalysisStage] = useState(0);
+  const [hasLitUp, setHasLitUp] = useState(false);
 
   const currentLocation = locations[currentCardIndex];
 
@@ -30,10 +32,10 @@ export const Pillar3View = () => {
 
   // Status items for left column
   const statusItems = [
-    { label: 'Location Verified', icon: MapPin, delay: 1 },
-    { label: 'Time Zone Check', icon: Clock, delay: 2 },
-    { label: 'Behavior Pattern Analysis', icon: Activity, delay: 3 },
-    { label: 'Risk Score Calculated', icon: CheckCircle, delay: 4 },
+    { label: 'Phase 1: Current Location Detected', icon: MapPin, delay: 1, stage: 1 },
+    { label: 'Phase 2: Previous Location Retrieved', icon: Clock, delay: 2, stage: 2 },
+    { label: 'Phase 3: Travel Speed Calculated', icon: Activity, delay: 3, stage: 3 },
+    { label: 'Phase 4: Pattern Analysis Complete', icon: CheckCircle, delay: 4, stage: 4 },
   ];
 
   // Card cycling animation
@@ -41,26 +43,62 @@ export const Pillar3View = () => {
     // Reset states for new card
     setIsChecking(true);
     setShowResult(false);
+    
+    // Only light up progressively on first load, then keep them lit
+    if (!hasLitUp) {
+      setAnalysisStage(0);
+      const stage1Timer = setTimeout(() => setAnalysisStage(1), 500);
+      const stage2Timer = setTimeout(() => setAnalysisStage(2), 1000);
+      const stage3Timer = setTimeout(() => setAnalysisStage(3), 1500);
+      const stage4Timer = setTimeout(() => {
+        setAnalysisStage(4);
+        setHasLitUp(true);
+      }, 2000);
 
-    // Show loader for 2 seconds
-    const loaderTimer = setTimeout(() => {
-      setIsChecking(false);
-      setShowResult(true);
-    }, 2000);
+      // Show loader for 2 seconds
+      const loaderTimer = setTimeout(() => {
+        setIsChecking(false);
+        setShowResult(true);
+      }, 2000);
 
-    // Show result for 2 seconds, then fade to next card
-    const nextCardTimer = setTimeout(() => {
-      setShowResult(false);
-      setTimeout(() => {
-        setCurrentCardIndex((prev) => (prev + 1) % locations.length);
-      }, 500); // Fade out duration
-    }, 4000);
+      // Show result for 2 seconds, then fade to next card
+      const nextCardTimer = setTimeout(() => {
+        setShowResult(false);
+        setTimeout(() => {
+          setCurrentCardIndex((prev) => (prev + 1) % locations.length);
+        }, 500); // Fade out duration
+      }, 4000);
 
-    return () => {
-      clearTimeout(loaderTimer);
-      clearTimeout(nextCardTimer);
-    };
-  }, [currentCardIndex]);
+      return () => {
+        clearTimeout(stage1Timer);
+        clearTimeout(stage2Timer);
+        clearTimeout(stage3Timer);
+        clearTimeout(stage4Timer);
+        clearTimeout(loaderTimer);
+        clearTimeout(nextCardTimer);
+      };
+    } else {
+      // After first time, skip the progressive lighting and keep all lit
+      setAnalysisStage(4);
+      
+      const loaderTimer = setTimeout(() => {
+        setIsChecking(false);
+        setShowResult(true);
+      }, 2000);
+
+      const nextCardTimer = setTimeout(() => {
+        setShowResult(false);
+        setTimeout(() => {
+          setCurrentCardIndex((prev) => (prev + 1) % locations.length);
+        }, 500);
+      }, 4000);
+
+      return () => {
+        clearTimeout(loaderTimer);
+        clearTimeout(nextCardTimer);
+      };
+    }
+  }, [currentCardIndex, hasLitUp]);
 
   return (
     <div className="fixed inset-0 bg-gradient-to-br from-[#0B0F1C] via-[#050810] to-[#000000] overflow-hidden">
@@ -183,7 +221,7 @@ export const Pillar3View = () => {
               {/* Status Items */}
               <div className="space-y-3">
                 {statusItems.map((item, index) => {
-                  const isActive = showResult;
+                  const isActive = analysisStage >= item.stage;
                   const ItemIcon = item.icon;
                   
                   return (
@@ -381,7 +419,7 @@ export const Pillar3View = () => {
           transition={{ delay: 1 }}
         >
           <p className="text-xs text-gray-500">
-            Real-time location and behavioral pattern monitoring
+            Analyzing location, timing, and access patterns
           </p>
         </motion.div>
       </div>

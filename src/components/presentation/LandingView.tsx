@@ -90,7 +90,7 @@ export const LandingView = () => {
           >
             <div className="relative inline-flex items-center gap-4">
               <img 
-                src="/src/Logo/icon.png" 
+                src="/logo-no-bg.png" 
                 alt="TrustLock Logo" 
                 className="w-[230px] h-[150px] drop-shadow-2xl object-contain"
               />

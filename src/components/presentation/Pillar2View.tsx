@@ -6,6 +6,7 @@ export const Pillar2View = () => {
   const [verificationStage, setVerificationStage] = useState(0);
   const [currentDeviceIndex, setCurrentDeviceIndex] = useState(0);
   const [isVerifying, setIsVerifying] = useState(false);
+  const [hasLitUp, setHasLitUp] = useState(false);
 
   const devices = [
     {
@@ -23,10 +24,10 @@ export const Pillar2View = () => {
   ];
 
   const statusItems = [
-    { label: 'Device Fingerprinting', stage: 1 },
-    { label: 'Hardware Validation', stage: 2 },
-    { label: 'Security Posture Check', stage: 3 },
-    { label: 'Trust Score Calculated', stage: 4 },
+    { label: 'Stage 1: Device Fingerprint Captured', stage: 1 },
+    { label: 'Stage 2: Database Lookup Performed', stage: 2 },
+    { label: 'Stage 3: Security Health Assessed', stage: 3 },
+    { label: 'Stage 4: Device Trust Score Assigned', stage: 4 },
   ];
 
   // Floating particles for background
@@ -40,6 +41,28 @@ export const Pillar2View = () => {
 
   // Animation sequence - Loops infinitely
   useEffect(() => {
+    // Light up status items progressively on first load
+    if (!hasLitUp) {
+      const stage1Timer = setTimeout(() => setVerificationStage(1), 500);
+      const stage2Timer = setTimeout(() => setVerificationStage(2), 1000);
+      const stage3Timer = setTimeout(() => setVerificationStage(3), 1500);
+      const stage4Timer = setTimeout(() => {
+        setVerificationStage(4);
+        setHasLitUp(true);
+      }, 2000);
+
+      // Cleanup timers
+      return () => {
+        clearTimeout(stage1Timer);
+        clearTimeout(stage2Timer);
+        clearTimeout(stage3Timer);
+        clearTimeout(stage4Timer);
+      };
+    }
+  }, [hasLitUp]);
+
+  // Separate effect for device cycling
+  useEffect(() => {
     const sequence = async () => {
       while (true) {
         // Cycle through each device
@@ -47,11 +70,15 @@ export const Pillar2View = () => {
           setCurrentDeviceIndex(i);
           setIsVerifying(true);
           
+          // Keep status items lit
+          if (hasLitUp) {
+            setVerificationStage(4);
+          }
+          
           // Verification animation (2 seconds)
           await new Promise(resolve => setTimeout(resolve, 2000));
           
           setIsVerifying(false);
-          setVerificationStage(prev => prev + 1);
           
           // Pause to show verified state (1 second)
           await new Promise(resolve => setTimeout(resolve, 1000));
@@ -61,7 +88,7 @@ export const Pillar2View = () => {
 
     sequence();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [hasLitUp]);
 
   const currentDevice = devices[currentDeviceIndex];
 
@@ -426,7 +453,7 @@ export const Pillar2View = () => {
           transition={{ delay: 1 }}
         >
           <p className="text-sm text-gray-500">
-            Continuous device health monitoring and compliance verification
+            Identifying and validating device security status
           </p>
         </motion.div>
       </div>
