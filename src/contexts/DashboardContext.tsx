@@ -214,7 +214,7 @@ export const DashboardProvider: React.FC<{ children: ReactNode }> = ({ children 
     setAuditLog(prev => [newEntry, ...prev]);
   };
 
-  // Real-time subscription to login_logs table
+  // Real-time subscription to login events via localStorage
   useEffect(() => {
     // Only react to these 4 demo accounts
     const DEMO_EMAILS = [
@@ -224,44 +224,60 @@ export const DashboardProvider: React.FC<{ children: ReactNode }> = ({ children 
       'david@company.com'
     ];
 
-    console.log('🔌 Setting up real-time subscription...');
+    console.log('🔌 Setting up local storage event listener for demo...');
 
-    // Subscribe to INSERT events on login_logs table
-    const channel = supabase
-      .channel('login_logs_changes')
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'login_logs'
-        },
-        (payload) => {
-          console.log('📨 Real-time event received:', payload);
-          const email = payload.new.email;
+    // Listen for login events via custom event (same window)
+    const handleLoginEvent = (e: CustomEvent) => {
+      try {
+        const loginEvent = e.detail;
+        console.log('📨 Login event received (custom):', loginEvent);
+        
+        const email = loginEvent.email;
+        
+        // Only update dashboard if email is one of our 4 demo accounts
+        if (DEMO_EMAILS.includes(email)) {
+          console.log('✅ Demo login detected, updating dashboard:', email);
+          updateFromLoginLog(loginEvent);
+        } else {
+          console.log('⏭️ Ignoring non-demo login:', email);
+        }
+      } catch (error) {
+        console.error('❌ Failed to parse login event:', error);
+      }
+    };
+
+    // Listen for login events via localStorage (cross-tab)
+    const handleStorageEvent = (e: StorageEvent) => {
+      if (e.key === 'last_login_event' && e.newValue) {
+        try {
+          const loginEvent = JSON.parse(e.newValue);
+          console.log('📨 Login event received (storage):', loginEvent);
+          
+          const email = loginEvent.email;
           
           // Only update dashboard if email is one of our 4 demo accounts
           if (DEMO_EMAILS.includes(email)) {
             console.log('✅ Demo login detected, updating dashboard:', email);
-            updateFromLoginLog(payload.new);
+            updateFromLoginLog(loginEvent);
           } else {
             console.log('⏭️ Ignoring non-demo login:', email);
           }
+        } catch (error) {
+          console.error('❌ Failed to parse login event:', error);
         }
-      )
-      .subscribe((status) => {
-        console.log('📡 Subscription status:', status);
-        if (status === 'SUBSCRIBED') {
-          console.log('✅ Real-time subscription ACTIVE - Dashboard will auto-update on login');
-        } else if (status === 'CHANNEL_ERROR') {
-          console.error('❌ Real-time subscription FAILED');
-        }
-      });
+      }
+    };
+
+    window.addEventListener('login_event', handleLoginEvent as EventListener);
+    window.addEventListener('storage', handleStorageEvent);
+
+    console.log('✅ Local event listener ACTIVE - Dashboard will auto-update on login');
 
     // Cleanup on unmount
     return () => {
-      console.log('🔌 Cleaning up real-time subscription');
-      supabase.removeChannel(channel);
+      console.log('🔌 Cleaning up event listeners');
+      window.removeEventListener('login_event', handleLoginEvent as EventListener);
+      window.removeEventListener('storage', handleStorageEvent);
     };
   }, []);
 

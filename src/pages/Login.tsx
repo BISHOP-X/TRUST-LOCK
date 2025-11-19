@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Shield, Loader2, CheckCircle, AlertTriangle, XCircle, Lock, User, Mail, Phone } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { motion, AnimatePresence } from 'framer-motion';
+import { supabase } from '@/lib/supabase';
 
 type DecisionType = 'GRANTED' | 'CHALLENGE' | 'BLOCKED' | null;
 
@@ -56,60 +57,122 @@ export default function Login() {
 
     try {
       const email = selectedEmail;
-      const password = 'demo'; // All demo accounts use this password
       
-      // Get device fingerprint for selected account (consistent for demo)
-      const selectedAccount = DEMO_ACCOUNTS.find(acc => acc.email === selectedEmail);
-      const deviceFingerprint = selectedAccount?.deviceFingerprint || `device_unknown_${Date.now()}`;
-      const userAgent = navigator.userAgent;
-      
-      // Get user's IP address
-      let userIp = '0.0.0.0';
-      
-      // Carol's scenario: Force Lagos IP to trigger impossible travel from London
-      if (email === 'carol@company.com') {
-        userIp = '197.210.76.45'; // Lagos, Nigeria (impossible travel from London)
-      } else {
-        try {
-          const ipResponse = await fetch('https://api.ipify.org?format=json');
-          const ipData = await ipResponse.json();
-          userIp = ipData.ip;
-        } catch (error) {
-          console.error('Failed to get IP:', error);
-          // Use fallback IP if service fails
-          userIp = '197.210.76.45'; // Lagos, Nigeria (demo fallback)
-        }
-      }
-
-      // Call Supabase Edge Function
-      const edgeFunctionUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/check-access`;
-      
-      const response = await fetch(edgeFunctionUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`
+      // MOCK DATA FOR LOCAL DEMO - Hardcoded scenarios for reliable presentation
+      const mockScenarios: Record<string, any> = {
+        'alice@company.com': {
+          decision: 'GRANTED',
+          riskScore: 30,
+          reason: 'Access granted. All security checks passed. Welcome back, Alice!',
+          riskFactors: [
+            { name: 'Identity Verified', status: 'success', points: 10, label: '✅ Credentials Valid' },
+            { name: 'Device Status', status: 'success', points: 5, label: '✅ Trusted Device' },
+            { name: 'Location', status: 'success', points: 5, label: '✅ Lagos, Nigeria' },
+            { name: 'Behavior', status: 'success', points: 10, label: '✅ Normal Pattern' }
+          ],
+          city: 'Lagos',
+          country: 'Nigeria',
+          latitude: 6.5244,
+          longitude: 3.3792,
         },
-        body: JSON.stringify({
-          email,
-          password,
-          ip: userIp,
-          userAgent,
-          deviceFingerprint
-        })
-      });
+        'bob@company.com': {
+          decision: 'CHALLENGE',
+          riskScore: 50,
+          reason: 'New device detected. Please complete additional verification to proceed.',
+          riskFactors: [
+            { name: 'Identity Verified', status: 'success', points: 10, label: '✅ Credentials Valid' },
+            { name: 'Device Status', status: 'warning', points: 25, label: '⚠️ New Device Detected' },
+            { name: 'Location', status: 'success', points: 5, label: '✅ Lagos, Nigeria' },
+            { name: 'Behavior', status: 'warning', points: 10, label: '⚠️ First Login' }
+          ],
+          city: 'Lagos',
+          country: 'Nigeria',
+          latitude: 6.5244,
+          longitude: 3.3792,
+        },
+        'carol@company.com': {
+          decision: 'BLOCKED',
+          riskScore: 100,
+          reason: 'Access denied. Impossible travel detected: You cannot travel 5,046 km from London to Lagos in 45 minutes.',
+          riskFactors: [
+            { name: 'Identity Verified', status: 'success', points: 10, label: '✅ Credentials Valid' },
+            { name: 'Device Status', status: 'success', points: 5, label: '✅ Trusted Device' },
+            { name: 'Location', status: 'warning', points: 25, label: '⚠️ Lagos, Nigeria' },
+            { name: 'Behavior', status: 'danger', points: 60, label: '🚨 Impossible Travel' }
+          ],
+          city: 'Lagos',
+          country: 'Nigeria',
+          latitude: 6.5244,
+          longitude: 3.3792,
+          isImpossibleTravel: true,
+          travelDistanceKm: 5046,
+          timeSinceLastLoginMinutes: 45,
+        },
+        'david@company.com': {
+          decision: 'BLOCKED',
+          riskScore: 85,
+          reason: 'Access denied. Device security compromised: Multiple security failures detected including disabled antivirus and outdated patches.',
+          riskFactors: [
+            { name: 'Identity Verified', status: 'success', points: 0, label: '✅ Password Valid' },
+            { name: 'Device Status', status: 'danger', points: 50, label: '🚨 Security Failures' },
+            { name: 'Location', status: 'warning', points: 20, label: '⚠️ Public WiFi' },
+            { name: 'Behavior', status: 'warning', points: 15, label: '⚠️ Unusual Access' }
+          ],
+          city: 'Lagos',
+          country: 'Nigeria',
+          latitude: 6.5244,
+          longitude: 3.3792,
+        },
+      };
 
-      const data = await response.json();
+      const mockData = mockScenarios[email];
       
-      console.log('🔐 Login response received:', {
+      console.log('🔐 Mock login response:', {
         email,
-        decision: data.decision,
-        riskScore: data.riskScore,
+        decision: mockData.decision,
+        riskScore: mockData.riskScore,
         timestamp: new Date().toISOString()
       });
       
-      setDecision(data.decision);
-      setMessage(data.reason || 'Security analysis completed.');
+      // Broadcast to dashboard via localStorage event (works locally without Supabase)
+      const loginEvent = {
+        id: Date.now().toString(),
+        created_at: new Date().toISOString(),
+        email,
+        user_id: email.split('@')[0], // Simple mock user_id
+        ip_address: '197.210.76.45',
+        user_agent: navigator.userAgent,
+        device_fingerprint: DEMO_ACCOUNTS.find(acc => acc.email === email)?.deviceFingerprint || 'mock-device',
+        city: mockData.city,
+        country: mockData.country,
+        latitude: mockData.latitude,
+        longitude: mockData.longitude,
+        risk_score: mockData.riskScore,
+        decision: mockData.decision,
+        risk_factors: mockData.riskFactors,
+        ai_reason: mockData.reason,
+        is_trusted_device: mockData.decision === 'GRANTED',
+        is_impossible_travel: mockData.isImpossibleTravel || false,
+        travel_distance_km: mockData.travelDistanceKm || 0,
+        time_since_last_login_minutes: mockData.timeSinceLastLoginMinutes || 0,
+      };
+
+      // Store in localStorage and trigger storage event
+      localStorage.setItem('last_login_event', JSON.stringify(loginEvent));
+      
+      // Trigger custom event (works in same window)
+      window.dispatchEvent(new CustomEvent('login_event', { detail: loginEvent }));
+      
+      // Also trigger storage event (works across tabs)
+      window.dispatchEvent(new StorageEvent('storage', {
+        key: 'last_login_event',
+        newValue: JSON.stringify(loginEvent),
+      }));
+      
+      console.log('✅ Login event broadcasted - Dashboard should update');
+      
+      setDecision(mockData.decision);
+      setMessage(mockData.reason);
       
       console.log('✅ Login attempt recorded - Dashboard should update in real-time');
     } catch (error) {

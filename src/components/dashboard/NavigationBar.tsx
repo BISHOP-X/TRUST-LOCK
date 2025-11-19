@@ -105,7 +105,7 @@ export const NavigationBar = ({ activeTab, onTabChange }: NavigationBarProps) =>
             >
               <div className="absolute inset-0 bg-[#F8C537]/20 rounded-full blur-lg" />
               <img
-                src="/src/Logo/icon.png"
+                src="/icon.png"
                 alt="TRUST-LOCK"
                 className="relative h-12 w-auto"
               />
