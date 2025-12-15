@@ -10,27 +10,27 @@ import { supabase } from '@/lib/supabase';
 type DecisionType = 'GRANTED' | 'CHALLENGE' | 'BLOCKED' | null;
 
 const DEMO_ACCOUNTS = [
-  { 
-    email: 'alice@company.com', 
-    name: 'Alice - Trusted Employee', 
+  {
+    email: 'alice@company.com',
+    name: 'Alice - Trusted Employee',
     scenario: 'Scenario 1',
     deviceFingerprint: 'device_alice_trusted_2024',
   },
-  { 
-    email: 'bob@company.com', 
-    name: 'Bob - New Device', 
+  {
+    email: 'bob@company.com',
+    name: 'Bob - New Device',
     scenario: 'Scenario 2',
     deviceFingerprint: 'device_bob_new_unknown',
   },
-  { 
-    email: 'carol@company.com', 
-    name: 'Carol - Impossible Travel', 
+  {
+    email: 'carol@company.com',
+    name: 'Carol - Impossible Travel',
     scenario: 'Scenario 3',
     deviceFingerprint: 'device_carol_trusted_2024',
   },
-  { 
-    email: 'david@company.com', 
-    name: 'David - Compromised Device', 
+  {
+    email: 'david@company.com',
+    name: 'David - Compromised Device',
     scenario: 'Scenario 4',
     deviceFingerprint: 'device_david_compromised',
   },
@@ -44,20 +44,20 @@ export default function Login() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!selectedEmail) {
       setDecision('BLOCKED');
       setMessage('Please select a demo account.');
       return;
     }
-    
+
     setLoading(true);
     setDecision(null);
     setMessage('');
 
     try {
       const email = selectedEmail;
-      
+
       // MOCK DATA FOR LOCAL DEMO - Hardcoded scenarios for reliable presentation
       const mockScenarios: Record<string, any> = {
         'alice@company.com': {
@@ -126,14 +126,14 @@ export default function Login() {
       };
 
       const mockData = mockScenarios[email];
-      
+
       console.log('🔐 Mock login response:', {
         email,
         decision: mockData.decision,
         riskScore: mockData.riskScore,
         timestamp: new Date().toISOString()
       });
-      
+
       // Broadcast to dashboard via localStorage event (works locally without Supabase)
       const loginEvent = {
         id: Date.now().toString(),
@@ -159,21 +159,21 @@ export default function Login() {
 
       // Store in localStorage and trigger storage event
       localStorage.setItem('last_login_event', JSON.stringify(loginEvent));
-      
+
       // Trigger custom event (works in same window)
       window.dispatchEvent(new CustomEvent('login_event', { detail: loginEvent }));
-      
+
       // Also trigger storage event (works across tabs)
       window.dispatchEvent(new StorageEvent('storage', {
         key: 'last_login_event',
         newValue: JSON.stringify(loginEvent),
       }));
-      
+
       console.log('✅ Login event broadcasted - Dashboard should update');
-      
+
       setDecision(mockData.decision);
       setMessage(mockData.reason);
-      
+
       console.log('✅ Login attempt recorded - Dashboard should update in real-time');
     } catch (error) {
       console.error('❌ Login error:', error);
@@ -211,9 +211,9 @@ export default function Login() {
   };
 
   const isImpossibleTravel = () => {
-    return decision === 'BLOCKED' && 
-           (message.toLowerCase().includes('impossible travel') || 
-            message.toLowerCase().includes('lagos'));
+    return decision === 'BLOCKED' &&
+      (message.toLowerCase().includes('impossible travel') ||
+        message.toLowerCase().includes('lagos'));
   };
 
   const shouldShowAdminContact = () => {
@@ -310,7 +310,7 @@ export default function Login() {
 
       <div className="relative z-10 container mx-auto px-6 py-12 min-h-screen flex flex-col items-center justify-center">
         {/* Header with Logo */}
-        <motion.div 
+        <motion.div
           className="text-center space-y-3 mb-8"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -357,7 +357,11 @@ export default function Login() {
                         </SelectTrigger>
                         <SelectContent className="bg-black/95 border-white/10 backdrop-blur-xl">
                           {DEMO_ACCOUNTS.map((account) => (
-                            <SelectItem key={account.email} value={account.email} className="text-white hover:bg-white/10">
+                            <SelectItem
+                              key={account.email}
+                              value={account.email}
+                              className="text-white hover:bg-white/10 focus:bg-white/10 focus:text-white data-[highlighted]:bg-white/10 data-[highlighted]:text-white"
+                            >
                               <div className="flex flex-col py-1">
                                 <span className="font-semibold text-white">{account.scenario}</span>
                                 <span className="text-xs text-gray-400">{account.name}</span>
@@ -415,14 +419,13 @@ export default function Login() {
                         >
                           {getDecisionIcon()}
                         </motion.div>
-                        
+
                         <div className="flex-1 space-y-3">
-                          <motion.h3 
-                            className={`font-bold text-2xl ${
-                              decision === 'GRANTED' ? 'text-green-500' :
-                              decision === 'CHALLENGE' ? 'text-yellow-500' :
-                              'text-red-500'
-                            }`}
+                          <motion.h3
+                            className={`font-bold text-2xl ${decision === 'GRANTED' ? 'text-green-500' :
+                                decision === 'CHALLENGE' ? 'text-yellow-500' :
+                                  'text-red-500'
+                              }`}
                             initial={{ opacity: 0, x: -10 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.3 }}
@@ -431,7 +434,7 @@ export default function Login() {
                             {decision === 'CHALLENGE' && 'Additional Verification'}
                             {decision === 'BLOCKED' && 'Access Blocked'}
                           </motion.h3>
-                          
+
                           <motion.div
                             className="text-sm text-white leading-relaxed"
                             initial={{ opacity: 0 }}
@@ -447,13 +450,11 @@ export default function Login() {
                               initial={{ opacity: 0, y: 10 }}
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ delay: 0.6 }}
-                              className={`mt-4 pt-4 border-t ${
-                                decision === 'BLOCKED' ? 'border-red-500/20' : 'border-yellow-500/20'
-                              }`}
+                              className={`mt-4 pt-4 border-t ${decision === 'BLOCKED' ? 'border-red-500/20' : 'border-yellow-500/20'
+                                }`}
                             >
-                              <p className={`text-xs font-semibold mb-2 ${
-                                decision === 'BLOCKED' ? 'text-red-400' : 'text-yellow-400'
-                              }`}>
+                              <p className={`text-xs font-semibold mb-2 ${decision === 'BLOCKED' ? 'text-red-400' : 'text-yellow-400'
+                                }`}>
                                 Contact Administrator:
                               </p>
                               <div className="space-y-1">
@@ -478,11 +479,10 @@ export default function Login() {
                           >
                             <div className="flex items-center justify-between text-xs">
                               <span className="text-gray-400 font-medium">Security Status</span>
-                              <span className={`font-semibold px-3 py-1 rounded-full ${
-                                decision === 'GRANTED' ? 'bg-green-500/20 text-green-500' :
-                                decision === 'CHALLENGE' ? 'bg-yellow-500/20 text-yellow-500' :
-                                'bg-red-500/20 text-red-500'
-                              }`}>
+                              <span className={`font-semibold px-3 py-1 rounded-full ${decision === 'GRANTED' ? 'bg-green-500/20 text-green-500' :
+                                  decision === 'CHALLENGE' ? 'bg-yellow-500/20 text-yellow-500' :
+                                    'bg-red-500/20 text-red-500'
+                                }`}>
                                 {decision}
                               </span>
                             </div>

@@ -148,7 +148,7 @@ const DashboardContext = createContext<DashboardContextType | undefined>(undefin
 export const DashboardProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [currentScenario, setCurrentScenario] = useState(0);
   const [auditLog, setAuditLog] = useState<AuditLogEntry[]>(initialAuditLog);
-  
+
   // Real-time state (starts empty, waiting for login)
   const [liveRiskScore, setLiveRiskScore] = useState<number>(0);
   const [liveDecision, setLiveDecision] = useState<'GRANTED' | 'CHALLENGE' | 'BLOCKED' | null>(null);
@@ -159,13 +159,13 @@ export const DashboardProvider: React.FC<{ children: ReactNode }> = ({ children 
 
   const setScenario = (scenarioIndex: number) => {
     setCurrentScenario(scenarioIndex);
-    
+
     // Update live state
     setLiveRiskScore(scenarios[scenarioIndex].riskScore);
     setLiveDecision(scenarios[scenarioIndex].decision);
     setLiveReason(scenarios[scenarioIndex].reason);
     setLiveFactors(scenarios[scenarioIndex].factors);
-    
+
     // Add to audit log
     const newEntry: AuditLogEntry = {
       id: Date.now().toString(),
@@ -177,7 +177,7 @@ export const DashboardProvider: React.FC<{ children: ReactNode }> = ({ children 
       decision: scenarios[scenarioIndex].decision,
       reason: scenarios[scenarioIndex].reason,
     };
-    
+
     setAuditLog(prev => [newEntry, ...prev]);
   };
 
@@ -194,11 +194,11 @@ export const DashboardProvider: React.FC<{ children: ReactNode }> = ({ children 
     setLiveRiskScore(logEntry.risk_score);
     setLiveDecision(logEntry.decision);
     setLiveReason(logEntry.ai_reason || logEntry.reason || '');
-    
+
     // Convert risk_factors JSONB to RiskFactor array
     const factors: RiskFactor[] = logEntry.risk_factors || [];
     setLiveFactors(factors);
-    
+
     // Add to audit log
     const newEntry: AuditLogEntry = {
       id: logEntry.id,
@@ -210,7 +210,7 @@ export const DashboardProvider: React.FC<{ children: ReactNode }> = ({ children 
       decision: logEntry.decision,
       reason: logEntry.ai_reason || 'Risk analysis completed',
     };
-    
+
     setAuditLog(prev => [newEntry, ...prev]);
   };
 
@@ -226,14 +226,28 @@ export const DashboardProvider: React.FC<{ children: ReactNode }> = ({ children 
 
     console.log('🔌 Setting up local storage event listener for demo...');
 
+    // Check for any existing login event on mount
+    const lastEvent = localStorage.getItem('last_login_event');
+    if (lastEvent) {
+      try {
+        const loginEvent = JSON.parse(lastEvent);
+        if (DEMO_EMAILS.includes(loginEvent.email)) {
+          console.log('📦 Loading last login event from storage:', loginEvent.email);
+          updateFromLoginLog(loginEvent);
+        }
+      } catch (error) {
+        console.error('❌ Failed to parse stored login event:', error);
+      }
+    }
+
     // Listen for login events via custom event (same window)
     const handleLoginEvent = (e: CustomEvent) => {
       try {
         const loginEvent = e.detail;
         console.log('📨 Login event received (custom):', loginEvent);
-        
+
         const email = loginEvent.email;
-        
+
         // Only update dashboard if email is one of our 4 demo accounts
         if (DEMO_EMAILS.includes(email)) {
           console.log('✅ Demo login detected, updating dashboard:', email);
@@ -252,9 +266,9 @@ export const DashboardProvider: React.FC<{ children: ReactNode }> = ({ children 
         try {
           const loginEvent = JSON.parse(e.newValue);
           console.log('📨 Login event received (storage):', loginEvent);
-          
+
           const email = loginEvent.email;
-          
+
           // Only update dashboard if email is one of our 4 demo accounts
           if (DEMO_EMAILS.includes(email)) {
             console.log('✅ Demo login detected, updating dashboard:', email);

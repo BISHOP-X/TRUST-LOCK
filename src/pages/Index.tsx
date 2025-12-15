@@ -12,9 +12,9 @@ import { useDashboard } from '@/contexts/DashboardContext';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  CheckCircle, AlertCircle, XCircle, Shield, Activity, TrendingUp, Lock, 
-  MapPin, Clock, Globe, Wifi, Smartphone, Monitor, AlertTriangle, 
+import {
+  CheckCircle, AlertCircle, XCircle, Shield, Activity, TrendingUp, Lock,
+  MapPin, Clock, Globe, Wifi, Smartphone, Monitor, AlertTriangle,
   User, Calendar, Zap, Eye, Radio
 } from 'lucide-react';
 
@@ -58,8 +58,8 @@ const DemoView = () => {
   const blockedToday = auditLog.filter(log => log.decision === 'BLOCKED').length;
   const avgRiskScore = Math.round(auditLog.reduce((acc, log) => acc + log.riskScore, 0) / (totalAttempts || 1));
 
-  // Recent activity (last 5 attempts)
-  const recentActivity = auditLog.slice(-5).reverse();
+  // Recent activity (first 5 are newest since we prepend new entries)
+  const recentActivity = auditLog.slice(0, 5);
 
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-[#0B0F1C] via-[#050810] to-[#000000] overflow-hidden">
@@ -165,7 +165,7 @@ const DemoView = () => {
                   <div className="relative flex items-start justify-between">
                     <div>
                       <p className="text-xs text-gray-400 mb-1">{metric.label}</p>
-                      <motion.p 
+                      <motion.p
                         className="text-2xl font-bold text-white"
                         key={metric.value}
                         initial={{ scale: 1.2, opacity: 0 }}
@@ -178,7 +178,7 @@ const DemoView = () => {
                       <MetricIcon className="h-4 w-4" style={{ color: metric.color }} />
                     </div>
                   </div>
-                  <motion.div 
+                  <motion.div
                     className="absolute bottom-0 left-0 h-1 rounded-full"
                     style={{ backgroundColor: metric.color }}
                     initial={{ width: 0 }}
@@ -195,7 +195,7 @@ const DemoView = () => {
           {/* Risk Gauge - Center Focus */}
           <Card className="bg-black/40 backdrop-blur-md border-[#3B82F6]/30 shadow-xl p-6 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#3B82F6]/10 to-[#F8C537]/10 rounded-full blur-3xl" />
-            
+
             <div className="relative">
               <div className="flex items-center gap-3 mb-6">
                 <div className="p-2.5 rounded-lg border border-[#3B82F6]/30">
@@ -206,7 +206,7 @@ const DemoView = () => {
 
               <div className="flex flex-col items-center justify-center mb-6">
                 <RiskGauge />
-                
+
                 <AnimatePresence mode="wait">
                   {decision && (
                     <motion.div
@@ -242,11 +242,10 @@ const DemoView = () => {
                       initial={{ width: 0 }}
                       animate={{ width: `${riskScore}%` }}
                       transition={{ duration: 1, ease: "easeOut" }}
-                      className={`h-2 rounded-full ${
-                        riskScore > 60 ? 'bg-gradient-to-r from-red-500 to-red-600' : 
-                        riskScore > 30 ? 'bg-gradient-to-r from-yellow-500 to-yellow-600' : 
-                        'bg-gradient-to-r from-green-500 to-green-600'
-                      }`}
+                      className={`h-2 rounded-full ${riskScore > 60 ? 'bg-gradient-to-r from-red-500 to-red-600' :
+                        riskScore > 30 ? 'bg-gradient-to-r from-yellow-500 to-yellow-600' :
+                          'bg-gradient-to-r from-green-500 to-green-600'
+                        }`}
                     />
                   </div>
                 </motion.div>
@@ -257,13 +256,13 @@ const DemoView = () => {
           {/* Real-Time Activity Feed */}
           <Card className="lg:col-span-2 bg-black/40 backdrop-blur-md border-[#3B82F6]/30 shadow-xl p-6 relative overflow-hidden">
             <div className="absolute bottom-0 left-0 w-40 h-40 bg-gradient-to-tr from-[#F8C537]/10 to-[#3B82F6]/10 rounded-full blur-3xl" />
-            
+
             <div className="relative">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
                   <div className="p-2.5 rounded-lg border border-[#F8C537]/30 relative">
                     <Radio className="h-5 w-5 text-[#F8C537]" strokeWidth={2} />
-                    <motion.div 
+                    <motion.div
                       className="absolute -top-1 -right-1 w-2 h-2 bg-green-500 rounded-full"
                       animate={{ scale: [1, 1.3, 1], opacity: [1, 0.5, 1] }}
                       transition={{ duration: 2, repeat: Infinity }}
@@ -285,6 +284,8 @@ const DemoView = () => {
                 <AnimatePresence>
                   {recentActivity.length > 0 ? recentActivity.map((log, index) => {
                     const timeAgo = `${Math.floor(Math.random() * 5) + 1}m ago`;
+                    // Extract friendly name from email (e.g., alice@company.com -> Alice)
+                    const friendlyName = log.user.split('@')[0].charAt(0).toUpperCase() + log.user.split('@')[0].slice(1);
                     const getActivityColor = () => {
                       switch (log.decision) {
                         case 'GRANTED': return { border: 'border-green-500/30', bg: 'bg-green-500/10', text: 'text-green-400', icon: CheckCircle };
@@ -313,7 +314,7 @@ const DemoView = () => {
                             <div className="flex items-center justify-between mb-2">
                               <div className="flex items-center gap-2">
                                 <User className="h-4 w-4 text-gray-400" />
-                                <span className="font-semibold text-white text-sm">{log.user}</span>
+                                <span className="font-semibold text-white text-sm">{friendlyName}</span>
                                 <Badge variant="outline" className={`text-xs ${style.text} border-current`}>
                                   {log.decision}
                                 </Badge>
@@ -401,15 +402,14 @@ const DemoView = () => {
                         transition={{ duration: 2, repeat: Infinity, delay: ring * 0.2 }}
                       />
                     ))}
-                    
+
                     {/* Center indicator */}
                     <div className="absolute inset-0 flex items-center justify-center">
                       <motion.div
-                        className={`w-16 h-16 rounded-full flex items-center justify-center ${
-                          decision === 'GRANTED' ? 'bg-green-500/20 border-green-500' :
+                        className={`w-16 h-16 rounded-full flex items-center justify-center ${decision === 'GRANTED' ? 'bg-green-500/20 border-green-500' :
                           decision === 'CHALLENGE' ? 'bg-yellow-500/20 border-yellow-500' :
-                          'bg-red-500/20 border-red-500'
-                        } border-2`}
+                            'bg-red-500/20 border-red-500'
+                          } border-2`}
                         animate={{ scale: [1, 1.1, 1] }}
                         transition={{ duration: 2, repeat: Infinity }}
                       >
@@ -510,7 +510,7 @@ const DemoView = () => {
                               <div className="text-xs text-gray-400">{pillar.factor?.label || 'Verified'}</div>
                             </div>
                           </div>
-                          <Badge 
+                          <Badge
                             variant="outline"
                             className="text-xs font-bold"
                             style={{ borderColor: pillar.color, color: pillar.color }}
@@ -546,7 +546,7 @@ const DemoView = () => {
             </div>
           </Card>
         </div>
-        
+
         {/* Risk Details Panel */}
         <RiskDetailsPanel />
       </div>
@@ -581,7 +581,7 @@ const Index = () => {
         <PresentationWrapper>
           <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
             <NavigationBar activeTab={activeTab} onTabChange={setActiveTab} />
-            
+
             {activeTab === 'demo' && <DemoView />}
             {activeTab === 'threat' && <ThreatOverview />}
             {activeTab === 'audit' && <AuditLogView />}
