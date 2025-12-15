@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { MapPin, Clock, Activity, CheckCircle, AlertTriangle } from 'lucide-react';
+import ImpossibleTravelGlobe from './three/ImpossibleTravelGlobe';
 import { useState, useEffect } from 'react';
 
 // Location data - 5 cards (3 good, 1 suspicious, 1 impossible)
@@ -19,7 +20,7 @@ export const Pillar3View = () => {
   const [analysisStage, setAnalysisStage] = useState(0);
   const [hasLitUp, setHasLitUp] = useState(false);
 
-  const currentLocation = locations[currentCardIndex];
+  // const currentLocation = locations[currentCardIndex];
 
   // Floating particles for background
   const particles = Array.from({ length: 30 }, (_, i) => ({
@@ -32,10 +33,10 @@ export const Pillar3View = () => {
 
   // Status items for left column
   const statusItems = [
-    { label: 'Phase 1: Current Location Detected', icon: MapPin, delay: 1, stage: 1 },
-    { label: 'Phase 2: Previous Location Retrieved', icon: Clock, delay: 2, stage: 2 },
-    { label: 'Phase 3: Travel Speed Calculated', icon: Activity, delay: 3, stage: 3 },
-    { label: 'Phase 4: Pattern Analysis Complete', icon: CheckCircle, delay: 4, stage: 4 },
+    { label: '10:00 AM - Login Verified (Lagos)', icon: CheckCircle, delay: 1, stage: 1 },
+    { label: '10:05 AM - New Login Channel (London)', icon: MapPin, delay: 2, stage: 2 },
+    { label: 'ANALYSIS: > 5000km in 5 mins', icon: Activity, delay: 3, stage: 3 },
+    { label: 'VERDICT: Impossible Travel Blocked', icon: AlertTriangle, delay: 3.5, stage: 4 },
   ];
 
   // Card cycling animation
@@ -43,7 +44,7 @@ export const Pillar3View = () => {
     // Reset states for new card
     setIsChecking(true);
     setShowResult(false);
-    
+
     // Only light up progressively on first load, then keep them lit
     if (!hasLitUp) {
       setAnalysisStage(0);
@@ -80,7 +81,7 @@ export const Pillar3View = () => {
     } else {
       // After first time, skip the progressive lighting and keep all lit
       setAnalysisStage(4);
-      
+
       const loaderTimer = setTimeout(() => {
         setIsChecking(false);
         setShowResult(true);
@@ -201,7 +202,7 @@ export const Pillar3View = () => {
         {/* Two Column Layout - Compact */}
         <div className="flex-1 flex items-center justify-center px-8 py-4">
           <div className="w-full max-w-6xl grid grid-cols-2 gap-8 items-center">
-            
+
             {/* LEFT COLUMN - Text Content */}
             <div className="space-y-4">
               {/* Title */}
@@ -223,7 +224,7 @@ export const Pillar3View = () => {
                 {statusItems.map((item, index) => {
                   const isActive = analysisStage >= item.stage;
                   const ItemIcon = item.icon;
-                  
+
                   return (
                     <motion.div
                       key={index}
@@ -259,153 +260,15 @@ export const Pillar3View = () => {
               </div>
             </div>
 
-            {/* RIGHT COLUMN - Single Card with Cycling Animation */}
+            {/* RIGHT COLUMN - 3D Globe Visualization */}
             <motion.div
-              className="relative flex items-center justify-center"
+              className="relative flex items-center justify-center h-full min-h-[500px]"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.3 }}
             >
-              <div className="w-full max-w-md">
-                <motion.div
-                  key={currentCardIndex}
-                  initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.9, y: -20 }}
-                  transition={{ duration: 0.5 }}
-                  className={`
-                    relative rounded-2xl p-6 backdrop-blur-sm border-2 transition-all duration-300
-                    ${currentLocation.risk === 'impossible' 
-                      ? 'bg-red-600/20 border-red-500' 
-                      : currentLocation.risk === 'suspicious'
-                      ? 'bg-yellow-500/20 border-yellow-500'
-                      : 'bg-blue-500/10 border-blue-500/30'
-                    }
-                  `}
-                >
-                  {/* Location Header */}
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className={`
-                      w-12 h-12 rounded-full flex items-center justify-center
-                      ${currentLocation.risk === 'impossible'
-                        ? 'bg-red-500/30 border-2 border-red-500'
-                        : currentLocation.risk === 'suspicious'
-                        ? 'bg-yellow-500/30 border-2 border-yellow-500'
-                        : 'bg-cyan-500/30 border-2 border-cyan-500'
-                      }
-                    `}>
-                      <MapPin className={`
-                        w-6 h-6
-                        ${currentLocation.risk === 'impossible' 
-                          ? 'text-red-500' 
-                          : currentLocation.risk === 'suspicious'
-                          ? 'text-yellow-500'
-                          : 'text-cyan-500'
-                        }
-                      `} />
-                    </div>
-
-                    <div>
-                      <h3 className="text-xl font-bold text-white">
-                        {currentLocation.name}
-                      </h3>
-                      <div className="flex items-center gap-2 mt-0.5">
-                        <Clock className="w-3 h-3 text-gray-400" />
-                        <span className="text-xs text-gray-400">
-                          {currentLocation.timestamp}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Verification Loader */}
-                  {isChecking && (
-                    <motion.div
-                      className="flex flex-col items-center justify-center py-6"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                    >
-                      <div className="relative w-12 h-12 mb-3">
-                        <motion.div
-                          className="absolute inset-0 border-4 border-[#F8C537]/30 rounded-full"
-                        />
-                        <motion.div
-                          className="absolute inset-0 border-4 border-[#F8C537] rounded-full border-t-transparent"
-                          animate={{ rotate: 360 }}
-                          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                        />
-                      </div>
-                      <p className="text-xs text-gray-400">Verifying location...</p>
-                    </motion.div>
-                  )}
-
-                  {/* Result Display */}
-                  {showResult && (
-                    <motion.div
-                      className="flex flex-col items-center justify-center py-6"
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ type: 'spring', stiffness: 200 }}
-                    >
-                      {currentLocation.risk === 'verified' && (
-                        <>
-                          <div className="w-16 h-16 rounded-full bg-green-500/20 border-2 border-green-500 flex items-center justify-center mb-3">
-                            <CheckCircle className="w-8 h-8 text-green-500" />
-                          </div>
-                          <h4 className="text-lg font-bold text-green-500 mb-1">VERIFIED</h4>
-                          <p className="text-xs text-gray-400">Login approved</p>
-                        </>
-                      )}
-
-                      {currentLocation.risk === 'suspicious' && (
-                        <>
-                          <div className="w-16 h-16 rounded-full bg-yellow-500/20 border-2 border-yellow-500 flex items-center justify-center mb-3">
-                            <AlertTriangle className="w-8 h-8 text-yellow-500" />
-                          </div>
-                          <h4 className="text-lg font-bold text-yellow-500 mb-1">SUSPICIOUS</h4>
-                          <p className="text-xs text-gray-400">Unusual pattern detected</p>
-                        </>
-                      )}
-
-                      {currentLocation.risk === 'impossible' && (
-                        <>
-                          <div className="w-16 h-16 rounded-full bg-red-500/20 border-2 border-red-500 flex items-center justify-center mb-3">
-                            <motion.div
-                              animate={{ scale: [1, 1.1, 1] }}
-                              transition={{ duration: 0.5, repeat: Infinity }}
-                            >
-                              <AlertTriangle className="w-8 h-8 text-red-500" />
-                            </motion.div>
-                          </div>
-                          <h4 className="text-lg font-bold text-red-500 mb-1">IMPOSSIBLE TRAVEL</h4>
-                          <p className="text-xs text-gray-400">Access denied</p>
-                        </>
-                      )}
-                    </motion.div>
-                  )}
-
-                  {/* Card Counter */}
-                  <div className="absolute bottom-3 right-3 text-xs text-gray-500">
-                    {currentCardIndex + 1} / {locations.length}
-                  </div>
-                </motion.div>
-
-                {/* Dots Indicator */}
-                <div className="flex justify-center gap-2 mt-4">
-                  {locations.map((_, index) => (
-                    <div
-                      key={index}
-                      className={`
-                        w-1.5 h-1.5 rounded-full transition-all duration-300
-                        ${index === currentCardIndex 
-                          ? 'bg-[#F8C537] w-6' 
-                          : 'bg-gray-600'
-                        }
-                      `}
-                    />
-                  ))}
-                </div>
+              <div className="w-full h-full">
+                <ImpossibleTravelGlobe />
               </div>
             </motion.div>
           </div>
