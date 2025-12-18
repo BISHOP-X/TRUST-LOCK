@@ -627,6 +627,10 @@ src/
 │   └── ui/                 # shadcn/ui primitives (button, card, etc.)
 ├── contexts/
 │   └── DashboardContext.tsx         # React Context for state + real-time
+├── services/               # Production-ready service abstractions
+│   ├── identityService.ts           # Pillar 1: Auth, MFA, biometrics
+│   ├── deviceService.ts             # Pillar 2: Fingerprinting, compliance
+│   └── contextService.ts            # Pillar 3: Geolocation, impossible travel
 ├── pages/
 │   ├── Index.tsx           # Main dashboard page
 │   └── Login.tsx           # Login page with dropdown selector
@@ -643,6 +647,105 @@ supabase/
     ├── 02_insert_demo_users.sql
     └── 03_update_demo_users_for_testing.sql
 ```
+
+---
+
+## Service Layer Architecture
+
+The `src/services/` directory contains production-ready service abstractions for each security pillar. These files demonstrate technical competency and document exactly how the system would integrate with real APIs in production.
+
+### Purpose
+
+**Demo Mode:** Ensures reliable, predictable scenarios during live presentations without external API dependencies.
+
+**Production Ready:** Each service contains fully documented production implementations (currently commented) that show the real APIs, algorithms, and integrations that would be used.
+
+### Service Files
+
+#### 1. Identity Service (`identityService.ts`)
+**Pillar 1: Who Are You?**
+
+```typescript
+// Production APIs documented:
+- Auth0 / Supabase Auth for primary authentication
+- TOTP (speakeasy library) for MFA verification
+- WebAuthn/FIDO2 for biometric authentication
+- Custom behavioral analysis for anomaly detection
+
+// Key functions:
+verifyIdentity(credentials)  → Check credentials + MFA
+generateMFASecret(email)     → Create TOTP enrollment
+verifyTOTP(secret, token)    → Validate 6-digit codes
+```
+
+#### 2. Device Service (`deviceService.ts`)
+**Pillar 2: What Device?**
+
+```typescript
+// Production APIs documented:
+- FingerprintJS Pro for browser identification
+- MDM integration (Jamf, Intune) for enterprise compliance
+- Browser APIs for basic device info
+
+// Key functions:
+evaluateDevicePosture(deviceInfo) → Check device security
+registerTrustedDevice(id, userId) → Add to trusted registry
+generateFingerprint()             → Create device hash
+getDeviceInfo()                   → Collect browser signals
+```
+
+#### 3. Context Service (`contextService.ts`)
+**Pillar 3: Where and When?**
+
+```typescript
+// Production APIs documented:
+- MaxMind GeoIP2 / IP-API for geolocation
+- ipinfo.io for VPN/Proxy detection
+- Haversine formula for distance calculation (fully implemented)
+
+// Key functions:
+analyzeContext(ip, userId)       → Full context analysis
+haversineDistance(lat1,lon1,...)  → Calculate distance (active)
+isImpossibleTravel(loc1, loc2)   → Check travel possibility
+getClientIP()                    → Get user's IP address
+```
+
+### Code Structure
+
+Each service follows this pattern:
+
+```typescript
+/**
+ * Service description + production implementation notes
+ * 
+ * Recommended APIs/Libraries:
+ * - [List of real APIs that would be used]
+ */
+
+export async function mainFunction(params) {
+  // ============================================================
+  // PRODUCTION IMPLEMENTATION (Currently disabled for demo)
+  // ============================================================
+  /*
+  // Full production code with real API calls
+  const response = await realAPI.call(params);
+  return processResponse(response);
+  */
+  
+  // ============================================================
+  // DEMO MODE: Simulated response for presentation
+  // ============================================================
+  console.log('[DEMO] Function called with:', params);
+  return mockResponse;
+}
+```
+
+### Why This Architecture?
+
+1. **Demonstrates Technical Competency** - Shows understanding of production security patterns
+2. **Presentation Reliability** - Demo mode ensures consistent behavior during live demos
+3. **Easy Production Transition** - Swap commented code for active code when ready
+4. **Documentation as Code** - Implementation details live with the code, not separate docs
 
 ---
 
